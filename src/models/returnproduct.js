@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   ReturnProduct.init({
-    CustomerID: DataTypes.INTEGER,
+    CustomerID: DataTypes.STRING,
     EmployeeID: DataTypes.INTEGER,
     RequestDate: DataTypes.DATE
   }, {

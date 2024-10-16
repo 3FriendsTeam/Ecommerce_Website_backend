@@ -34,7 +34,7 @@ module.exports = {
         allowNull: true
       },
       CustomerID: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
         allowNull: false,
         references: {
           model: 'Customers',

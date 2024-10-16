@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
     PaymentMethodID: DataTypes.INTEGER,
     EmployeeID: DataTypes.INTEGER,
     PromotionID: DataTypes.INTEGER,
-    CustomerID: DataTypes.INTEGER,
+    CustomerID: DataTypes.STRING,
     PaymentStatus: DataTypes.BOOLEAN,
     PaymentDate: DataTypes.DATE,
     AddressID: DataTypes.INTEGER

@@ -11,7 +11,7 @@ module.exports = {
       },
       
       CustomerID: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
         allowNull: false,
         references: {
           model: 'Customers',

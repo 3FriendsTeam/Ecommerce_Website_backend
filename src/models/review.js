@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
     RatingLevel: DataTypes.INTEGER,
     ReviewDate: DataTypes.DATE,
     ProductID: DataTypes.INTEGER,
-    CustomerID: DataTypes.INTEGER
+    CustomerID: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Review',

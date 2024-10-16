@@ -52,16 +52,16 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL' // Đặt NULL khi khuyến mãi bị xóa
       },
-      // CustomerID: {
-      //   type: Sequelize.INTEGER,
-      //   allowNull: false,
-      //   references: {
-      //     model: 'Customers', // Tham chiếu tới bảng Customers
-      //     key: 'id'
-      //   },
-      //   onUpdate: 'CASCADE',
-      //   onDelete: 'CASCADE' // Xóa đơn hàng khi khách hàng bị xóa
-      // },
+      CustomerID: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        // references: {
+        //   model: 'Customers', // Tham chiếu tới bảng Customers
+        //   key: 'id'
+        // },
+        // onUpdate: 'CASCADE',
+        // onDelete: 'CASCADE' // Xóa đơn hàng khi khách hàng bị xóa
+      },
       
       PaymentStatus: {
         type: Sequelize.BOOLEAN,

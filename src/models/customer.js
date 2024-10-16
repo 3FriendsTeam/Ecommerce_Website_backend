@@ -23,6 +23,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Customer.init({
+    id: {
+      type: DataTypes.STRING,
+      primaryKey: true,  // Xác định đây là khóa chính
+    },
     CustomerName: DataTypes.STRING,
     Gender: DataTypes.STRING,
     JoinDate: DataTypes.DATE,

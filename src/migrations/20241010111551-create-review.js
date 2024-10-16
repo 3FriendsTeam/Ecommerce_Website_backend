@@ -36,7 +36,7 @@ module.exports = {
         onDelete: 'CASCADE'
       },
       CustomerID: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
         allowNull: false,
         references: {
           model: 'Customers', // Tham chiếu tới bảng Customers
