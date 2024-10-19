@@ -4,7 +4,7 @@ const { sequelize } = require('./models');
 const app = express();
 const productRoutes = require('./routes/productRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
-const registerRoutes = require('./routes/authenticateTokenRouter');
+const authenticateTokenRouter = require('./routes/authenticateTokenRouter');
 require('dotenv').config();
 
 app.use(cors());
@@ -24,6 +24,6 @@ app.use(express.json());
 // Đăng ký các route
 app.use('/api', productRoutes);
 app.use('/api', categoryRoutes);
-app.use('/api', registerRoutes);
+app.use('/api', authenticateTokenRouter);
 module.exports = app;
 

@@ -30,11 +30,11 @@ module.exports = (sequelize, DataTypes) => {
     CustomerName: DataTypes.STRING,
     Gender: DataTypes.STRING,
     JoinDate: DataTypes.DATE,
-    Address: DataTypes.STRING,
     Email: DataTypes.STRING,
     PhoneNumber: DataTypes.STRING,
     BirthDate: DataTypes.DATE,
-    Password: DataTypes.STRING
+    Password: DataTypes.STRING,
+    IsVerified: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'Customer',

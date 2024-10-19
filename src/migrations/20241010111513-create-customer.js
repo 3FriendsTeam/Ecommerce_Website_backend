@@ -20,10 +20,6 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: true
       },
-      Address: {
-        type: Sequelize.STRING,
-        allowNull: true
-      },
       Email: {
         type: Sequelize.STRING,
         allowNull: false,
@@ -39,7 +35,11 @@ module.exports = {
       },
       Password: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: true
+      },
+      IsVerified: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false, defaultValue: false
       },
       createdAt: {
         allowNull: false,
