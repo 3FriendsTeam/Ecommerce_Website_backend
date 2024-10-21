@@ -33,7 +33,7 @@ const registerCustomerWithEmailAndPassword = async (req, res) => {
  * @returns {Object} - Response containing success status and message
  */
 const checkEmail = async (req, res) => {
-  const { email } = req.body;
+  const { email } = req.query;
 
   if (!email) {
     return res.status(400).json({
