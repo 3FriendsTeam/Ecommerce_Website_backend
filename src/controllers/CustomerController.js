@@ -25,13 +25,7 @@ const registerCustomerWithEmailAndPassword = async (req, res) => {
         res.status(500).json({error: true, message: error.message});
     }
 }
-
-/**
- * Check if the email already exists in the database
- * @param {Object} req - Request object
- * @param {Object} res - Response object
- * @returns {Object} - Response containing success status and message
- */
+//check mail đã đăng kí hay chưa dưới DB
 const checkEmail = async (req, res) => {
   const { email } = req.query;
 
