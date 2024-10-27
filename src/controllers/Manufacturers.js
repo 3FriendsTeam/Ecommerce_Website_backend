@@ -26,6 +26,7 @@ const deleteManufacturer = async(req, res) => {
         res.status(500).json({ error: error.message });
     }
 }
+
 const updateManufacturer = async(req, res) => {
     try {
         const { id } = req.query;

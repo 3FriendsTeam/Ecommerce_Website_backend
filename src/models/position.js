@@ -10,17 +10,12 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // Một Position có nhiều Employee_Position
-    this.hasMany(models.Employee_Position, { foreignKey: 'PositionID' });
+      // Một Position có nhiều Employee
+    this.hasMany(models.Employee, { foreignKey: 'PositionID' });
   }
   }
   Position.init({
-    PositionName: DataTypes.STRING,
-    Notes: DataTypes.STRING,
-    DeletedAt: DataTypes.DATE,
-    CreatedBy: DataTypes.STRING,
-    DeletedBy: DataTypes.STRING,
-    UpdatedBy: DataTypes.STRING
+    PositionName: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Position',

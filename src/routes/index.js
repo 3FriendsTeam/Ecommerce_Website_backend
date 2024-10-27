@@ -29,11 +29,9 @@ const{
 } = require('../controllers/WarrantyPolicy');
 
 const {
-    createPosition,
     getAllPosition,
-    deletePosition,
-    updatePosition
 } = require('../controllers/Position');
+const { createEmployee } = require('../controllers/EmployeeController');
 
 
 const router = express.Router();
@@ -83,13 +81,11 @@ router.post('/create-country-of-origin', CreateCountryOfOrigin);
 //#region Admin
 //router Admin
 
-
+//router Employee
+router.post('/create-employee', createEmployee);
 
 //router position
 router.get('/positions', getAllPosition);
-router.post('/create-positions', createPosition);
-router.delete('/delete-positions', deletePosition);
-router.patch('/update-positions', updatePosition);
 
 
 

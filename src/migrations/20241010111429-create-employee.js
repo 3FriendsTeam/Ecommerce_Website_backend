@@ -21,9 +21,15 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
-      Role: {
-        type: Sequelize.STRING,
-        allowNull: false
+      PositionID: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Positions',
+          key: 'id'
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE' // Đảm bảo tính nhất quán khi Position bị cập nhật
       },
       FullName: {
         type: Sequelize.STRING,
@@ -41,15 +47,11 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true
       },
-      IDNumber: {
-        type: Sequelize.STRING,
-        allowNull: true
-      },
       Email: {
         type: Sequelize.STRING,
         allowNull: true,
         validate: {
-          isEmail: true // Xác thực định dạng email nếu cần thiết
+          isEmail: true 
         }
       },
       PhoneNumber: {
