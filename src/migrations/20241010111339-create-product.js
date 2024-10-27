@@ -39,29 +39,25 @@ module.exports = {
         type: Sequelize.INTEGER,
         defaultValue: 0 // Giá trị mặc định là 0
       },
-      CreatedDate: {
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW // Tự động gán ngày hiện tại
-      },
-      LastUpdated: {
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW // Tự động gán ngày hiện tại
-      },
-      DeletedDate: {
+      DeletedAt: {
         type: Sequelize.DATE
       },
       CreatedBy: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: true
       },
       DeletedBy: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: true
       },
       UpdatedBy: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: true
       },
       IsDeleted: {
         type: Sequelize.BOOLEAN,
-        defaultValue: false // Giá trị mặc định là false
+        allowNull: true,
+        defaultValue: false 
       },
       ProductTypeID: {
         type: Sequelize.INTEGER,

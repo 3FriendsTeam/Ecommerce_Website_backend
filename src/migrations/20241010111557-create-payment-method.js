@@ -29,15 +29,7 @@ module.exports = {
       ApplicableFee: {
         type: Sequelize.DECIMAL
       },
-      CreatedDate: {
-        type: Sequelize.DATE,
-        allowNull: false,
-        defaultValue: Sequelize.NOW // Gán ngày hiện tại khi tạo
-      },
-      LastUpdated: {
-        type: Sequelize.DATE
-      },
-      DeletedDate: {
+      DeletedAt: {
         type: Sequelize.DATE
       },
       CreatedBy: {

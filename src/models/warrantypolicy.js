@@ -17,15 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     WarrantyProvider: DataTypes.STRING,
     WarrantyConditions: DataTypes.STRING,
     PolicyContent: DataTypes.TEXT,
-    CreatedDate: {
-      type: DataTypes.DATE,
-      defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
-    },
-    LastUpdated: {
-      type: DataTypes.DATE,
-      defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
-    },
-    DeletedDate: DataTypes.DATE,
+    DeletedAt: DataTypes.DATE,
     CreatedBy: DataTypes.STRING,
     DeletedBy: DataTypes.STRING,
     UpdatedBy: DataTypes.STRING,

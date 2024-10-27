@@ -21,15 +21,7 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false
       },
-      CreatedDate: {
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW
-      },
-      LastUpdated: {
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW
-      },
-      DeletedDate: {
+      DeletedAt: {
         type: Sequelize.DATE,
         allowNull: true
       },

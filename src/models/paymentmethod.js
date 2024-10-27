@@ -23,9 +23,7 @@ module.exports = (sequelize, DataTypes) => {
     StartDate: DataTypes.DATE,
     EndDate: DataTypes.DATE,
     ApplicableFee: DataTypes.STRING,
-    CreatedDate: DataTypes.DATE,
-    LastUpdated: DataTypes.DATE,
-    DeletedDate: DataTypes.DATE,
+    DeletedAt: DataTypes.DATE,
     CreatedBy: DataTypes.STRING,
     DeletedBy: DataTypes.STRING,
     UpdatedBy: DataTypes.STRING
