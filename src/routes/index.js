@@ -21,11 +21,32 @@ const {
     deleteManufacturer,
     updateManufacturer} = require('../controllers/Manufacturers');
 
+const{
+    createWarrantyPolicy,
+    getAllWarrantyPolicy,
+    deleteWarrantyPolicy,
+    updateWarrantyPolicy
+} = require('../controllers/WarrantyPolicy');
 
-
+const {
+    createPosition,
+    getAllPosition,
+    deletePosition,
+    updatePosition
+} = require('../controllers/Position');
 
 
 const router = express.Router();
+
+
+
+
+
+//router warranty
+router.get('/warranty-policies', getAllWarrantyPolicy);
+router.post('/create-warranty-policies', createWarrantyPolicy);
+router.delete('/delete-warranty-policies', deleteWarrantyPolicy);
+router.patch('/update-warranty-policies', updateWarrantyPolicy);
 
 
 
@@ -56,6 +77,30 @@ router.get('/check-email', checkEmail);
 //router country of origin
 router.get('/country-of-origin', GetCountryOfOrigins);
 router.post('/create-country-of-origin', CreateCountryOfOrigin);
+
+
+
+//#region Admin
+//router Admin
+
+
+
+//router position
+router.get('/positions', getAllPosition);
+router.post('/create-positions', createPosition);
+router.delete('/delete-positions', deletePosition);
+router.patch('/update-positions', updatePosition);
+
+
+
+
+//#endregion
+
+
+
+
+
+
 
 
 

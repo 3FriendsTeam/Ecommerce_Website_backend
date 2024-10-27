@@ -17,9 +17,7 @@ module.exports = (sequelize, DataTypes) => {
   Position.init({
     PositionName: DataTypes.STRING,
     Notes: DataTypes.STRING,
-    CreatedDate: DataTypes.DATE,
-    LastUpdated: DataTypes.DATE,
-    DeletedDate: DataTypes.DATE,
+    DeletedAt: DataTypes.DATE,
     CreatedBy: DataTypes.STRING,
     DeletedBy: DataTypes.STRING,
     UpdatedBy: DataTypes.STRING
