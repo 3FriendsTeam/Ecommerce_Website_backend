@@ -6,6 +6,7 @@ const getAllPosition = async (req, res) => {
     res.send(data);
     }
     catch (error) {
+        console.error(error);
         res.status(500).json({ error: error.message });
     }
 }

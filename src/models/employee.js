@@ -11,14 +11,14 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-    // Một Employee có nhiều DeliveryReceipt
-    this.hasMany(models.DeliveryReceipt, { foreignKey: 'EmployeeID' });
-    // Một Employee có nhiều ReturnProduct
-    this.hasMany(models.ReturnProduct, { foreignKey: 'EmployeeID' });
-    // Một Employee có nhiều OrderCustomer
-    this.hasMany(models.OrderCustomer, { foreignKey: 'EmployeeID' });
-    
-    this.belongsTo(models.Position, { foreignKey: 'PositionID' });
+      // Mỗi Employee có nhiều DeliveryReceipt
+      this.hasMany(models.DeliveryReceipt, { foreignKey: 'EmployeeID' });
+      // Mỗi Employee có nhiều ReturnProduct
+      this.hasMany(models.ReturnProduct, { foreignKey: 'EmployeeID' });
+      // Mỗi Employee có nhiều OrderCustomer
+      this.hasMany(models.OrderCustomer, { foreignKey: 'EmployeeID' });
+      // Mỗi Employee thuộc về một Position
+      this.belongsTo(models.Position, { foreignKey: 'PositionID' });
     }
   }
   Employee.init({
@@ -43,3 +43,4 @@ module.exports = (sequelize, DataTypes) => {
   });
   return Employee;
 };
+

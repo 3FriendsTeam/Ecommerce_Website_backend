@@ -19,7 +19,7 @@ const {
     createManufacturer,
     getManufacturers,
     deleteManufacturer,
-    updateManufacturer} = require('../controllers/Manufacturers');
+    updateManufacturer} = require('../controllers/ManufacturersController');
 
 const{
     createWarrantyPolicy,
@@ -30,8 +30,8 @@ const{
 
 const {
     getAllPosition,
-} = require('../controllers/Position');
-const { createEmployee } = require('../controllers/EmployeeController');
+} = require('../controllers/PositionController');
+const { createEmployee, getAllEmployee } = require('../controllers/EmployeeController');
 
 
 const router = express.Router();
@@ -83,7 +83,7 @@ router.post('/create-country-of-origin', CreateCountryOfOrigin);
 
 //router Employee
 router.post('/create-employee', createEmployee);
-
+router.get('/employees', getAllEmployee);
 //router position
 router.get('/positions', getAllPosition);
 

@@ -2,6 +2,7 @@
 const {
   Model
 } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class Position extends Model {
     /**
@@ -10,15 +11,16 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // Một Position có nhiều Employee
-    this.hasMany(models.Employee, { foreignKey: 'PositionID' });
+      this.hasMany(models.Employee, { foreignKey: 'PositionID' });
+    }
   }
-  }
+
   Position.init({
     PositionName: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Position',
   });
+
   return Position;
 };
