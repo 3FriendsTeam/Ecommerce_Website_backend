@@ -1,4 +1,9 @@
 const {Employee} = require("../models");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
+
+
 
 const createEmployee = async (req, res) => {
     try{
