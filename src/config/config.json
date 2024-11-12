@@ -2,7 +2,7 @@
     "development": {
       "username": "sa",
       "password": "123",
-      "database": "Friend_Ecommerce",
+      "database": "Friends_Ecommerce",
       "host": "DESKTOP-HRMC28G",
       "port": 1433,
       "dialect": "mssql",
@@ -16,7 +16,7 @@
     "test": {
       "username": "sa",
       "password": "123",
-      "database": "Friend_Ecommerce",
+      "database": "Friends_Ecommerce",
       "host": "DESKTOP-HRMC28G",
       "port": 1433,
       "dialect": "mssql",
@@ -30,7 +30,7 @@
     "production": {
       "username": "sa",
       "password": "123",
-      "database": "Friend_Ecommerce",
+      "database": "Friends_Ecommerce",
       "host": "DESKTOP-HRMC28G",
       "port": 1433,
       "dialect": "mssql",

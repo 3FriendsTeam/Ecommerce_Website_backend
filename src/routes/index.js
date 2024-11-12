@@ -10,7 +10,9 @@ const {
     deleteCategory } = require('../controllers/categoryController'); 
 const {
     registerCustomerWithEmailAndPassword, 
-    checkEmail} = require("../controllers/CustomerController");
+    checkEmail,
+    getCustomerInfo,
+    updateCustomerInfo} = require("../controllers/CustomerController");
 const { GetCountryOfOrigins, CreateCountryOfOrigin } = require('../controllers/countryOfOrigins');
 
 const { getAllProductType, createProductType, deleteProductType } = require('../controllers/productTypeController');
@@ -31,7 +33,7 @@ const{
 const {
     getAllPosition,
 } = require('../controllers/PositionController');
-const { createEmployee, getAllEmployee } = require('../controllers/EmployeeController');
+const { createEmployee, getAllEmployee, LoginEmployee, updatePassword } = require('../controllers/EmployeeController');
 
 
 const router = express.Router();
@@ -71,7 +73,8 @@ router.delete('/delete-categories', deleteCategory);
 //router customer
 router.post('/register', registerCustomerWithEmailAndPassword);
 router.get('/check-email', checkEmail);
-
+router.get('/get-customer-info', getCustomerInfo);
+router.post('/update-customer-info', updateCustomerInfo);
 //router country of origin
 router.get('/country-of-origin', GetCountryOfOrigins);
 router.post('/create-country-of-origin', CreateCountryOfOrigin);
@@ -84,6 +87,9 @@ router.post('/create-country-of-origin', CreateCountryOfOrigin);
 //router Employee
 router.post('/create-employee', createEmployee);
 router.get('/employees', getAllEmployee);
+router.post('/login-employee', LoginEmployee);
+router.put('/update-password', updatePassword);
+
 //router position
 router.get('/positions', getAllPosition);
 

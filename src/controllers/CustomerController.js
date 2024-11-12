@@ -56,18 +56,52 @@ const checkEmail = async (req, res) => {
       message: error.message,
     });
   }
-};
-const checkCreatedEmail = async (req, res) => {
-  const { uid } = req.params;
-  try {
-    const user = await auth.getUser(uid);
-    if (user.emailVerified) {
-      res.status(200).send("Email đã được xác nhận.");
-    } else {
-      res.status(200).send("Email chưa được xác nhận.");
+};  
+
+const getCustomerInfo = async (req, res) => {
+    const token = req.headers.authorization?.split(" ")[1];
+    try {
+        const decodedToken = await admin.auth().verifyIdToken(token);
+        const uid = decodedToken.uid;
+        const user = await Customer.findOne({ where: { id: uid } });
+        console.log(user);
+        res.status(200).json(user);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({error: error.message});
     }
+}
+const updateCustomerInfo = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  const {
+      CustomerName,
+      Email,
+      PhoneNumber,
+      BirthDate,
+      Gender
+  } = req.body;
+
+  try {
+      const decodedToken = await admin.auth().verifyIdToken(token);
+      const uid = decodedToken.uid;
+
+      const user = await Customer.findOne({ where: { id: uid } });
+      if (!user) {
+          return res.status(404).json({ error: true, message: "User not found" });
+      }
+
+      await user.update({
+          CustomerName : CustomerName,
+          Email: Email,
+          PhoneNumber : PhoneNumber,
+          BirthDate : BirthDate,
+          Gender : Gender
+      });
+
+      res.status(200).json({ message: "Thông tin người dùng đã được cập nhật thành công" });
   } catch (error) {
-    res.status(500).send(error.message);
+      console.error("Error updating user info:", error);
+      res.status(500).json({ error: true, message: error.message });
   }
 }
 
@@ -75,4 +109,6 @@ const checkCreatedEmail = async (req, res) => {
 module.exports = {
     registerCustomerWithEmailAndPassword,
     checkEmail,
+    getCustomerInfo,
+    updateCustomerInfo
 };
