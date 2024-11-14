@@ -18,8 +18,35 @@ const createProduct = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
   };
+const SearchProduct = async (req, res) => {
+    try {
+        const { name, category } = req.query;
+
+        // Tạo điều kiện tìm kiếm
+        const searchConditions = {};
+        
+        if (name) {
+            searchConditions.ProductName = { [Op.like]: `%${name}%` }; // Tìm tên gần đúng
+        }
+
+        if (category) {
+            searchConditions.ProductTypeID = category; // Tìm theo danh mục
+        }
+
+        const products = await Product.findAll({
+            where: searchConditions
+        });
+
+        res.status(200).json(products);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Lỗi khi tìm kiếm sản phẩm' });
+    }
+};
+
 
 module.exports = {
   getProducts,
   createProduct,
+  SearchProduct
 };

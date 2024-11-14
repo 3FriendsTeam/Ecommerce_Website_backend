@@ -104,11 +104,24 @@ const updateCustomerInfo = async (req, res) => {
       res.status(500).json({ error: true, message: error.message });
   }
 }
-
+const getAllCustomer = async (req, res) => {
+    try {
+        const data = await Customer.findAll({
+            attributes: {
+                exclude: ['Password']
+            }
+        });
+        res.send(data);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
+    }
+}
 
 module.exports = {
     registerCustomerWithEmailAndPassword,
     checkEmail,
     getCustomerInfo,
-    updateCustomerInfo
+    updateCustomerInfo,
+    getAllCustomer
 };

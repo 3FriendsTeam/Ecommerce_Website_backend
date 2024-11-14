@@ -2,6 +2,7 @@ const express = require('express');
 const {
     createProduct,
     getProducts,
+    SearchProduct,
   } = require('../controllers/productController');
 const { 
     getCategories, 
@@ -12,7 +13,8 @@ const {
     registerCustomerWithEmailAndPassword, 
     checkEmail,
     getCustomerInfo,
-    updateCustomerInfo} = require("../controllers/CustomerController");
+    updateCustomerInfo,
+    getAllCustomer} = require("../controllers/CustomerController");
 const { GetCountryOfOrigins, CreateCountryOfOrigin } = require('../controllers/countryOfOrigins');
 
 const { getAllProductType, createProductType, deleteProductType } = require('../controllers/productTypeController');
@@ -63,7 +65,7 @@ router.delete('/delete-manufacturers', deleteManufacturer);
 
 //router product
 router.get('/products', getProducts)
-
+router.get('/search-products', SearchProduct);
 //router category
 router.get('/categories', getCategories);
 router.post('/create-categories', createCategory);
@@ -75,6 +77,7 @@ router.post('/register', registerCustomerWithEmailAndPassword);
 router.get('/check-email', checkEmail);
 router.get('/get-customer-info', getCustomerInfo);
 router.post('/update-customer-info', updateCustomerInfo);
+router.get('/get-all-customer', getAllCustomer);
 //router country of origin
 router.get('/country-of-origin', GetCountryOfOrigins);
 router.post('/create-country-of-origin', CreateCountryOfOrigin);
