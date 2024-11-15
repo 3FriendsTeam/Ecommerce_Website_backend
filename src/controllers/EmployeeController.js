@@ -29,20 +29,29 @@ const getAllEmployee = async (req, res) => {
 const LoginEmployee = async (req, res) => {
     const { username, password } = req.body;
     try {
-      const user = await Employee.findOne({where: { Username: username }});
-
-      if (user && bcrypt.compareSync(password, user.Password)) 
-        {
-        res.status(200).json({
-          data: user
+        const user = await Employee.findOne({
+            where: { Username: username },
+            include: [
+                {
+                    model: Position,
+                    as: 'Position',
+                    attributes: ['PositionName']
+                }
+            ]
         });
-      } else {
-        res.status(401).json({ message: "Invalid username or password" });
-      }
+
+        if (user && bcrypt.compareSync(password, user.Password)) {
+            const { Password, ...userWithoutPassword } = user.toJSON();
+            res.status(200).json({
+                data: userWithoutPassword
+            });
+        } else {
+            res.status(401).json({ message: "Invalid username or password" });
+        }
     } catch (error) {
-      res.status(500).json({ error: error.message });
+        res.status(500).json({ error: error.message });
     }
-  };
+};
   
 
 const updatePassword = async (req, res) => {
