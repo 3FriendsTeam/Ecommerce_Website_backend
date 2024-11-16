@@ -7,8 +7,8 @@ const nodemailer = require('nodemailer');
 
 const createEmployee = async (req, res) => {
     try{
-    const {ProfileImage, Username, Password, PositionID, FullName, DateOfBirth, Gender, Address, Email, PhoneNumber,CreatedBy} = req.body;
-    const employee = await Employee.create({ProfileImage: ProfileImage, Username: Username, Password: Password, PositionID: PositionID, FullName: FullName, DateOfBirth: DateOfBirth, Gender: Gender, Address: Address, Email: Email, PhoneNumber: PhoneNumber,CreatedBy: CreatedBy});
+    const { Username, Password, PositionID, FullName, DateOfBirth, Gender, Address, Email, PhoneNumber,CreatedBy} = req.body;
+    const employee = await Employee.create({ Username: Username, Password: Password, PositionID: PositionID, FullName: FullName, DateOfBirth: DateOfBirth, Gender: Gender, Address: Address, Email: Email, PhoneNumber: PhoneNumber,CreatedBy: CreatedBy});
     res.status(201).json(employee);
     }
     catch(error){
