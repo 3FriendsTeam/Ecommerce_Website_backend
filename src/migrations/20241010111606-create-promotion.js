@@ -9,6 +9,10 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      ImgProfile : {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
       PromotionName: {
         type: Sequelize.STRING,
         allowNull: false // Không cho phép giá trị null

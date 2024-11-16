@@ -14,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
       this.hasMany(models.Product, { foreignKey: 'WarrantyPolicyID' });    }
   }
   WarrantyPolicy.init({
+    ImgProfile : DataTypes.STRING,
     WarrantyProvider: DataTypes.STRING,
     WarrantyConditions: DataTypes.STRING,
     PolicyContent: DataTypes.TEXT,

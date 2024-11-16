@@ -117,11 +117,33 @@ const getAllCustomer = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 }
+const LockCustomer = async (req, res) => {
+  const { key } = req.body;
+  try {
+    const user = await Customer.findOne({ where: { id: key } });
+    await user.update({ IsActive: 0 });
+    res.status(200).json({message: "Khóa thành công"});
+  } catch (error) {
+    res.status(500).json({ message: "Lỗi hệ thống. vui lòng thử lại sau!" });
+  }
+}
 
+const UnLockCustomer = async (req, res) => {
+  const { key } = req.body;
+  try {
+    const user = await Customer.findOne({ where: { id: key } });
+    await user.update({ IsActive: 1 });
+    res.status(200).json({message: "Mở khóa thành công"});
+  } catch (error) {
+    res.status(500).json({ message: "Lỗi hệ thống. vui lòng thử lại sau!" });
+  }
+}
 module.exports = {
     registerCustomerWithEmailAndPassword,
     checkEmail,
     getCustomerInfo,
     updateCustomerInfo,
-    getAllCustomer
+    getAllCustomer,
+    LockCustomer,
+    UnLockCustomer
 };

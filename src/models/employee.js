@@ -22,7 +22,6 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Employee.init({
-    ProfileImage: DataTypes.STRING,
     Username: DataTypes.STRING,
     Password: DataTypes.STRING,
     PositionID: DataTypes.INTEGER,
@@ -32,6 +31,7 @@ module.exports = (sequelize, DataTypes) => {
     Address: DataTypes.STRING,
     Email: DataTypes.STRING,
     PhoneNumber: DataTypes.STRING,
+    IsActive : DataTypes.BOOLEAN,
     DeletedAt: DataTypes.DATE,
     CreatedBy: DataTypes.STRING,
     DeletedBy: DataTypes.STRING,

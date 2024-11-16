@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   }
   Promotion.init({
+    ImgProfile : DataTypes.STRING,
     PromotionName: DataTypes.STRING,
     DiscountValue: DataTypes.INTEGER,
     Quantity: DataTypes.INTEGER,

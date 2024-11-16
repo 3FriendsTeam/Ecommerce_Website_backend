@@ -9,10 +9,6 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      ProfileImage: {
-        type: Sequelize.STRING,
-        allowNull: true
-      },
       Username: {
         type: Sequelize.STRING,
         allowNull: false
@@ -57,6 +53,11 @@ module.exports = {
       PhoneNumber: {
         type: Sequelize.STRING,
         allowNull: true
+      },
+      IsActive: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: true,
+        allowNull:false
       },
       DeletedAt: {
         type: Sequelize.DATE,

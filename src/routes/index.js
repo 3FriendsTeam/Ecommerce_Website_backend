@@ -14,7 +14,9 @@ const {
     checkEmail,
     getCustomerInfo,
     updateCustomerInfo,
-    getAllCustomer} = require("../controllers/CustomerController");
+    getAllCustomer,
+    LockCustomer,
+    UnLockCustomer} = require("../controllers/CustomerController");
 const { GetCountryOfOrigins, CreateCountryOfOrigin } = require('../controllers/countryOfOrigins');
 
 const { getAllProductType, createProductType, deleteProductType } = require('../controllers/productTypeController');
@@ -78,6 +80,8 @@ router.get('/check-email', checkEmail);
 router.get('/get-customer-info', getCustomerInfo);
 router.post('/update-customer-info', updateCustomerInfo);
 router.get('/get-all-customer', getAllCustomer);
+router.post('/lock-customer',LockCustomer);
+router.post('/unlock-customer',UnLockCustomer);
 //router country of origin
 router.get('/country-of-origin', GetCountryOfOrigins);
 router.post('/create-country-of-origin', CreateCountryOfOrigin);
