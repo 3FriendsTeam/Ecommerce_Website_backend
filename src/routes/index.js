@@ -38,7 +38,7 @@ const{
 const {
     getAllPosition,
 } = require('../controllers/PositionController');
-const { createEmployee, getAllEmployee, LoginEmployee, updatePassword } = require('../controllers/EmployeeController');
+const { createEmployee, getAllEmployee, LoginEmployee, updatePassword, deleteEmployeeById, LockEmployee, UnLockEmployee } = require('../controllers/EmployeeController');
 const { getPromotionById } = require('../controllers/PromotionController');
 
 
@@ -98,7 +98,9 @@ router.post('/create-employee', createEmployee);
 router.get('/employees', getAllEmployee);
 router.post('/login-employee', LoginEmployee);
 router.put('/update-password', updatePassword);
-
+router.delete('/delete-employee-by-id', deleteEmployeeById);
+router.post('/lock-employee', LockEmployee);
+router.post('/unlock-employee', UnLockEmployee);
 //router position
 router.get('/positions', getAllPosition);
 

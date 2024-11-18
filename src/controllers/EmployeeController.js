@@ -71,6 +71,38 @@ const updatePassword = async (req, res) => {
   }
 };
 
+const deleteEmployeeById = async (req, res) => {
+    try {
+        const { key } = req.body;
+        const employee = await Employee.destroy({ where: { id : key } });
+        res.status(200).json({message: "Employee deleted successfully"});
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+const LockEmployee = async (req, res) => {
+  const { key } = req.body;
+  try {
+    const user = await Employee.findOne({ where: { id: key } });
+    await user.update({ IsActive: 0 });
+    res.status(200).json({message: "Khóa thành công"});
+  } catch (error) {
+    res.status(500).json({ message: "Lỗi hệ thống. vui lòng thử lại sau!" });
+  }
+}
+
+const UnLockEmployee = async (req, res) => {
+  const { key } = req.body;
+  try {
+    const user = await Employee.findOne({ where: { id: key } });
+    await user.update({ IsActive: 1 });
+    res.status(200).json({message: "Mở khóa thành công"});
+  } catch (error) {
+    res.status(500).json({ message: "Lỗi hệ thống. vui lòng thử lại sau!" });
+  }
+}
+
 
 const forgotPassword = async (req, res) => {
   const { emailOrUsername } = req.body;
@@ -112,5 +144,8 @@ module.exports = {
     createEmployee,
     getAllEmployee,
     LoginEmployee,
-    updatePassword
+    updatePassword,
+    deleteEmployeeById,
+    LockEmployee,
+    UnLockEmployee,
 }
