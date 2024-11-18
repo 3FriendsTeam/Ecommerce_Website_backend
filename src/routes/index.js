@@ -40,6 +40,7 @@ const {
 } = require('../controllers/PositionController');
 const { createEmployee, getAllEmployee, LoginEmployee, updatePassword, deleteEmployeeById, LockEmployee, UnLockEmployee } = require('../controllers/EmployeeController');
 const { getPromotionById } = require('../controllers/PromotionController');
+const { getAllMethodPayment, updateStatusMethodPayment } = require('../controllers/PaymentMethodController');
 
 
 const router = express.Router();
@@ -104,6 +105,9 @@ router.post('/unlock-employee', UnLockEmployee);
 //router position
 router.get('/positions', getAllPosition);
 
+//router method Payment
+router.get('/method-payment', getAllMethodPayment);
+router.post('/update-status-method-payment', updateStatusMethodPayment);
 
 
 
