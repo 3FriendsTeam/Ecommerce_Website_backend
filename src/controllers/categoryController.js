@@ -1,4 +1,4 @@
-const { Category } = require('../models'); // Sử dụng destructuring từ models/index.js
+const { Category, Manufacturer, Product } = require('../models'); // Sử dụng destructuring từ models/index.js
 
 const getCategories = async (req, res) => {
   try {
@@ -37,9 +37,55 @@ const deleteCategory = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 }
+const getCategoryById = async (req, res) => {
+  try {
+    const { id } = req.query;
+    const category = await Category.findByPk(id);
+    res.status(200).json(category);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+const getAllManufacturerOfProduct = async (req, res) => {
+  const { id } = req.query;
+
+  if (!id) {
+    return res.status(400).json({ error: 'categoryId query parameter is required' });
+  }
+
+  // Validate categoryId is a number
+  if (isNaN(parseInt(id, 10))) {
+    return res.status(400).json({ error: 'categoryId must be a number' });
+  }
+
+  try {
+    // Fetch distinct manufacturers associated with the given category ID
+    const manufacturers = await Manufacturer.findAll({
+      attributes: ['id', 'ManufacturerName', 'PathLogo', 'createdAt', 'updatedAt'],
+      include: [
+        {
+          model: Product,
+          attributes: [],
+          where: {
+            CategoryID: id,
+          },
+          required: true,
+        },
+      ],
+      distinct: true,
+    });
+
+    res.json(manufacturers);
+  } catch (error) {
+    console.error('Error fetching manufacturers:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
 module.exports = {
   getCategories,
   createCategory,
   updateCategory,
-  deleteCategory
+  deleteCategory,
+  getCategoryById,
+  getAllManufacturerOfProduct
 };

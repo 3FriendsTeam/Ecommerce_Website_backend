@@ -59,10 +59,10 @@ module.exports = {
         allowNull: true,
         defaultValue: false 
       },
-      ProductTypeID: {
+      CategoryID: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'ProductTypes', // Bảng liên kết
+          model: 'Categories', // Bảng liên kết
           key: 'id'
         },
         onUpdate: 'CASCADE',

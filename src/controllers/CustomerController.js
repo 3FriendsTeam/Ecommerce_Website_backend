@@ -13,11 +13,10 @@ const registerCustomerWithEmailAndPassword = async (req, res) => {
         email,
         phoneNumber = null,
         birthDate,
-        isVerified = true
+        IsActive = true
     } = req.body;
-    console.log(customerName, gender, email, phoneNumber, birthDate);
     try {
-        await Customer.create({ id: uid, CustomerName: customerName, Email: email, PhoneNumber: phoneNumber, BirthDate: birthDate, Gender: gender , isVerified: isVerified});
+        await Customer.create({ id: uid, CustomerName: customerName, Email: email, PhoneNumber: phoneNumber, BirthDate: birthDate, Gender: gender , IsActive: IsActive});
         res.status(200).json({ message: "Đăng ký thành công", uid, email });
     } catch (error) {
         console.error("Error registering user:", error);

@@ -13,6 +13,10 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false // Đảm bảo tên nhà sản xuất là bắt buộc
       },
+      PathLogo: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

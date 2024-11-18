@@ -44,6 +44,15 @@ const SearchProduct = async (req, res) => {
     }
 };
 
+const getAllManufacturerOfProduct = async (req, res) => {
+    try{
+      const { id } = req.query;
+      const policies = await Policy.findAll({where:{ProductID:id}}); 
+      res.status(200).json(policies);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+}
 
 module.exports = {
   getProducts,

@@ -8,7 +8,9 @@ const {
     getCategories, 
     createCategory, 
     updateCategory, 
-    deleteCategory } = require('../controllers/categoryController'); 
+    deleteCategory, 
+    getCategoryById,
+    getAllManufacturerOfProduct} = require('../controllers/categoryController'); 
 const {
     registerCustomerWithEmailAndPassword, 
     checkEmail,
@@ -19,7 +21,6 @@ const {
     UnLockCustomer} = require("../controllers/CustomerController");
 const { GetCountryOfOrigins, CreateCountryOfOrigin } = require('../controllers/countryOfOrigins');
 
-const { getAllProductType, createProductType, deleteProductType } = require('../controllers/productTypeController');
 
 const {
     createManufacturer,
@@ -38,6 +39,7 @@ const {
     getAllPosition,
 } = require('../controllers/PositionController');
 const { createEmployee, getAllEmployee, LoginEmployee, updatePassword } = require('../controllers/EmployeeController');
+const { getPromotionById } = require('../controllers/PromotionController');
 
 
 const router = express.Router();
@@ -51,13 +53,6 @@ router.get('/warranty-policies', getAllWarrantyPolicy);
 router.post('/create-warranty-policies', createWarrantyPolicy);
 router.delete('/delete-warranty-policies', deleteWarrantyPolicy);
 router.patch('/update-warranty-policies', updateWarrantyPolicy);
-
-
-
-//router product type
-router.get('/product-types', getAllProductType);
-router.post('/create-product-types', createProductType);
-router.delete('/delete-product-types', deleteProductType);
 
 //router manufacturer
 router.get('/manufacturers', getManufacturers);
@@ -73,6 +68,13 @@ router.get('/categories', getCategories);
 router.post('/create-categories', createCategory);
 router.patch('/update-categories', updateCategory);
 router.delete('/delete-categories', deleteCategory);
+router.get('/get-category-by-id', getCategoryById);
+router.get('/get-all-manufacturer-Of-Product-By-Category',getAllManufacturerOfProduct);
+
+//router promotion
+router.get('/promotions-by-id', getPromotionById);
+
+
 
 //router customer
 router.post('/register', registerCustomerWithEmailAndPassword);

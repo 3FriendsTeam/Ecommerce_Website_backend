@@ -16,7 +16,8 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Manufacturer.init({
-    ManufacturerName: DataTypes.STRING
+    ManufacturerName: DataTypes.STRING,
+    PathLogo: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Manufacturer',
