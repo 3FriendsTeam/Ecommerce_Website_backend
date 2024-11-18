@@ -7,8 +7,9 @@ const nodemailer = require('nodemailer');
 
 const createEmployee = async (req, res) => {
     try{
-    const { Username, Password, PositionID, FullName, DateOfBirth, Gender, Address, Email, PhoneNumber,CreatedBy} = req.body;
-    const employee = await Employee.create({ Username: Username, Password: Password, PositionID: PositionID, FullName: FullName, DateOfBirth: DateOfBirth, Gender: Gender, Address: Address, Email: Email, PhoneNumber: PhoneNumber,CreatedBy: CreatedBy});
+    const {newEmployee, AdminName} = req.body;
+    const hashedPassword = bcrypt.hashSync(newEmployee.Password, 10);
+    const employee = await Employee.create({ Username: newEmployee.Username, Password: hashedPassword, PositionID: newEmployee.PositionID, FullName: newEmployee.FullName, DateOfBirth: newEmployee.DateOfBirth, Gender: newEmployee.Gender, Address: newEmployee.Address, Email: newEmployee.Email, PhoneNumber: newEmployee.PhoneNumber,CreatedBy: AdminName});
     res.status(201).json(employee);
     }
     catch(error){
