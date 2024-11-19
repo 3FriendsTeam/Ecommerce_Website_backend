@@ -39,9 +39,9 @@ const {
     getAllPosition,
 } = require('../controllers/PositionController');
 const { createEmployee, getAllEmployee, LoginEmployee, updatePassword, deleteEmployeeById, LockEmployee, UnLockEmployee } = require('../controllers/EmployeeController');
-const { getPromotionById, createPromotion, deletePromotion, updatePromotion } = require('../controllers/PromotionController');
+const { getPromotionById, createPromotion, deletePromotion, updatePromotion, getAllPromotion } = require('../controllers/PromotionController');
 const { getAllMethodPayment, updateStatusMethodPayment } = require('../controllers/PaymentMethodController');
-const { getAllOrders, getOrderById, getNewOrders } = require('../controllers/OrderController');
+const { getAllOrders, getOrderById, getNewOrders, updateOrderStatus } = require('../controllers/OrderController');
 
 
 const router = express.Router();
@@ -78,7 +78,7 @@ router.get('/promotions-by-id', getPromotionById);
 router.post('/create-promotion', createPromotion);
 router.delete('/delete-promotion', deletePromotion);
 router.put('/update-promotion', updatePromotion);
-
+router.get('/get-all-promotion', getAllPromotion);
 //router customer
 router.post('/register', registerCustomerWithEmailAndPassword);
 router.get('/check-email', checkEmail);
@@ -102,7 +102,7 @@ router.post('/create-country-of-origin', CreateCountryOfOrigin);
 router.get('/orders', getAllOrders);
 router.get('/get-order-by-id', getOrderById);
 router.get('/new-orders', getNewOrders);
-
+router.post('/update-order-status', updateOrderStatus);
 //router Employee
 router.post('/create-employee', createEmployee);
 router.get('/employees', getAllEmployee);

@@ -64,10 +64,32 @@ const updatePromotion = async (req, res) => {
     }
 };
 
+const getAllPromotion = async (req, res) => {
+    try {
+        const currentDate = new Date(); 
+
+        const promotions = await Promotion.findAll({
+            where: {
+                Quantity: {
+                    [Op.gt]: 0, 
+                },
+                EndDate: {
+                    [Op.gt]: currentDate,
+                },
+            },
+        });
+        res.status(200).json(promotions);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
 
 module.exports = { 
     getPromotionById, 
     createPromotion,
     deletePromotion,
-    updatePromotion
+    updatePromotion,
+    getAllPromotion
 };
