@@ -3,6 +3,8 @@ const {
     createProduct,
     getProducts,
     SearchProduct,
+    getProductsByIdCategory,
+    getProductsById,
   } = require('../controllers/productController');
 const { 
     getCategories, 
@@ -65,6 +67,8 @@ router.delete('/delete-manufacturers', deleteManufacturer);
 //router product
 router.get('/products', getProducts)
 router.get('/search-products', SearchProduct);
+router.get('/get-product-by-id-category', getProductsByIdCategory);
+router.get('/get-product-by-id', getProductsById);
 //router category
 router.get('/categories', getCategories);
 router.post('/create-categories', createCategory);

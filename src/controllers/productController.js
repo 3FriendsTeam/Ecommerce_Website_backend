@@ -1,4 +1,46 @@
-const { Product } = require('../models');
+const { Product, Category, WarrantyPolicy, CountryOfOrigin, Manufacturer, ProductAttributeDetail, Image, Color, DeliveryReceiptDetail, ReturnDetail, Review, OrderProductDetail } = require('../models');
+
+
+const getProductsByIdCategory = async (req, res) => {
+  try {
+    const { id } = req.query;
+    const products = await Product.find({ category: id });
+    res.json(products);
+    } catch (error) {
+      res.status(500).json({ message: 'Error al obtener los productos' });
+    }
+}
+
+
+
+const getProductsById = async (req, res) => {
+  try {
+    const { id } = req.query;
+    console.log(id);
+    const product = await Product.findByPk(id, {
+      include: [
+        { model: Category },
+        { model: WarrantyPolicy },
+        { model: CountryOfOrigin },
+        { model: Manufacturer },
+        { model: ProductAttributeDetail },
+        { model: Image },
+        { model: Color },
+        { model: ReturnDetail },
+        { model: Review },
+      ],
+    });
+    if (!product) {
+      return res.status(404).json({ message: 'Sản phẩm không tồn tại' });
+    }
+    res.json(product);
+  } catch (error) {
+    console.error('Lỗi khi lấy sản phẩm:', error);
+    res.status(500).json({ message: 'Lỗi khi lấy sản phẩm' });
+  }
+};
+
+
 
 const getProducts = async (req, res) => {
     try {
@@ -57,5 +99,7 @@ const getAllManufacturerOfProduct = async (req, res) => {
 module.exports = {
   getProducts,
   createProduct,
-  SearchProduct
+  SearchProduct,
+  getProductsByIdCategory,
+  getProductsById
 };
