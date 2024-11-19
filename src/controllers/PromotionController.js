@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const { Promotion } = require('../models');
 const getPromotionById = async (req, res) => {
     try {
