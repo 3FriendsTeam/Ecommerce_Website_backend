@@ -39,8 +39,9 @@ const {
     getAllPosition,
 } = require('../controllers/PositionController');
 const { createEmployee, getAllEmployee, LoginEmployee, updatePassword, deleteEmployeeById, LockEmployee, UnLockEmployee } = require('../controllers/EmployeeController');
-const { getPromotionById } = require('../controllers/PromotionController');
+const { getPromotionById, createPromotion, deletePromotion, updatePromotion } = require('../controllers/PromotionController');
 const { getAllMethodPayment, updateStatusMethodPayment } = require('../controllers/PaymentMethodController');
+const { getAllOrders, getOrderById, getNewOrders } = require('../controllers/OrderController');
 
 
 const router = express.Router();
@@ -74,8 +75,9 @@ router.get('/get-all-manufacturer-Of-Product-By-Category',getAllManufacturerOfPr
 
 //router promotion
 router.get('/promotions-by-id', getPromotionById);
-
-
+router.post('/create-promotion', createPromotion);
+router.delete('/delete-promotion', deletePromotion);
+router.put('/update-promotion', updatePromotion);
 
 //router customer
 router.post('/register', registerCustomerWithEmailAndPassword);
@@ -93,6 +95,13 @@ router.post('/create-country-of-origin', CreateCountryOfOrigin);
 
 //#region Admin
 //router Admin
+
+
+
+//router order
+router.get('/orders', getAllOrders);
+router.get('/get-order-by-id', getOrderById);
+router.get('/new-orders', getNewOrders);
 
 //router Employee
 router.post('/create-employee', createEmployee);
