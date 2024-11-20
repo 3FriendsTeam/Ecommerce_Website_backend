@@ -5,6 +5,7 @@ const {
     SearchProduct,
     getProductsByIdCategory,
     getProductsById,
+    getLowStockProucts,
   } = require('../controllers/productController');
 const { 
     getCategories, 
@@ -69,6 +70,7 @@ router.get('/products', getProducts)
 router.get('/search-products', SearchProduct);
 router.get('/get-product-by-id-category', getProductsByIdCategory);
 router.get('/get-product-by-id', getProductsById);
+router.get('/get-low-stock-products', getLowStockProucts);
 //router category
 router.get('/categories', getCategories);
 router.post('/create-categories', createCategory);

@@ -86,6 +86,21 @@ const SearchProduct = async (req, res) => {
     }
 };
 
+
+const getLowStockProucts = async (req, res) => {
+  try {
+    const lowStockProducts = await Product.findAll({
+      where: {
+        quantity: { [Op.lt]: 10 },
+      },
+    });
+    res.status(200).json(lowStockProducts);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+
 const getAllManufacturerOfProduct = async (req, res) => {
     try{
       const { id } = req.query;
@@ -101,5 +116,6 @@ module.exports = {
   createProduct,
   SearchProduct,
   getProductsByIdCategory,
-  getProductsById
+  getProductsById,
+  getLowStockProucts
 };
