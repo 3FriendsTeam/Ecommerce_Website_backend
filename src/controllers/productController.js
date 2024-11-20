@@ -5,12 +5,16 @@ const { Product, Category, WarrantyPolicy, CountryOfOrigin, Manufacturer, Produc
 const getProductsByIdCategory = async (req, res) => {
   try {
     const { id } = req.query;
-    const products = await Product.find({ category: id });
+    const products = await Product.findAll({
+      where: {
+        CategoryID: id,
+      },
+    });
     res.json(products);
-    } catch (error) {
-      res.status(500).json({ message: 'Error al obtener los productos' });
-    }
-}
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener los productos' });
+  }
+};
 
 
 
