@@ -56,17 +56,21 @@ const LoginEmployee = async (req, res) => {
   
 
 const updatePassword = async (req, res) => {
-  const { id, password } = req.body;
+  const { id, oldPassword, password } = req.body;
   try {
     const user = await Employee.findOne({ where: { id } });
-    if (user) {
-      const hashedPassword = bcrypt.hashSync(password, 10);
-      await user.update({ Password: hashedPassword });
-      res.status(200).json({ message: "Password updated successfully" });
-    } else {
-      res.status(404).json({ message: "User not found" });
+    if (!user) {
+      return res.status(404).json({ message: "Người dùng không tồn tại" });
     }
+    const isMatch = await bcrypt.compare(oldPassword, user.Password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Mật khẩu cũ không đúng" });
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await user.update({ Password: hashedPassword });
+    res.status(200).json({ message: "Đổi mật khẩu thành công" });
   } catch (error) {
+    console.error('Lỗi khi cập nhật mật khẩu:', error);
     res.status(500).json({ error: error.message });
   }
 };
@@ -103,6 +107,17 @@ const UnLockEmployee = async (req, res) => {
   }
 }
 
+const updateEmployee = async (req, res) => {
+  const { id ,values } = req.body;
+  console.log(id,values);
+  try {
+    const employee = await Employee.update({ FullName: values.FullName, DateOfBirth: values.DateOfBirth, Gender: values.Gender, Address: values.Address, Email: values.Email, PhoneNumber: values.PhoneNumber}, { where: { id: id }});
+    console.log(employee);
+    res.status(200).json(employee);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
 const forgotPassword = async (req, res) => {
   const { emailOrUsername } = req.body;
@@ -148,4 +163,5 @@ module.exports = {
     deleteEmployeeById,
     LockEmployee,
     UnLockEmployee,
+    updateEmployee
 }
