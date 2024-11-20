@@ -2,7 +2,7 @@ const { Op } = require('sequelize');
 const { Promotion } = require('../models');
 const getPromotionById = async (req, res) => {
     try {
-        const { id } = req.params;
+        const { id } = req.query;
         const promotion = await Promotion.findByPk(id);
         res.status(200).json(promotion);
     } catch (error) {
@@ -22,7 +22,8 @@ const createPromotion = async (req, res) => {
 }
 const deletePromotion = async (req, res) => {
     try {
-        const { id } = req.params; 
+        const { id } = req.query; 
+        console.log(id);
         const deletedPromotion = await Promotion.destroy({ where: { id } });
 
         if (deletedPromotion) {
@@ -69,16 +70,7 @@ const getAllPromotion = async (req, res) => {
     try {
         const currentDate = new Date(); 
 
-        const promotions = await Promotion.findAll({
-            where: {
-                Quantity: {
-                    [Op.gt]: 0, 
-                },
-                EndDate: {
-                    [Op.gt]: currentDate,
-                },
-            },
-        });
+        const promotions = await Promotion.findAll();
         res.status(200).json(promotions);
     } catch (error) {
         console.error(error);
