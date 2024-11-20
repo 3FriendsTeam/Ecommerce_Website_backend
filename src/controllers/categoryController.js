@@ -10,9 +10,8 @@ const getCategories = async (req, res) => {
 };
 const createCategory = async (req, res) => {
   try {
-    const{ CategoryName , pathImg} = req.body;
-    console.log(CategoryName, pathImg);
-    const category = await Category.create({CategoryName:CategoryName,pathImg:pathImg});
+    const{ CategoryName, pathImg} = req.body;
+    const category = await Category.create({CategoryName:CategoryName,pathImg: pathImg});
     res.status(201).json(category);
   } catch (error) {
     res.status(500).json({ error: error.message });

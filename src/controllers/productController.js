@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const { Product, Category, WarrantyPolicy, CountryOfOrigin, Manufacturer, ProductAttributeDetail, Image, Color, DeliveryReceiptDetail, ReturnDetail, Review, OrderProductDetail } = require('../models');
 
 
