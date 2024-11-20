@@ -73,7 +73,9 @@ const getShipingOrders = async (req, res) => {
                 "CustomerID"
             ],
             where: {
-                OrderStatus: "Chờ giao hàng" || "Đang giao",
+                OrderStatus: {
+                    [Op.or]: ["Chờ giao hàng", "Đang giao"],
+                },
             }
         });
 
@@ -99,7 +101,9 @@ const getPackingOrders = async (req, res) => {
                 "CustomerID"
             ],
             where: {
-                OrderStatus: "Đã xác nhận" || "Đang đóng hàng",
+                OrderStatus: {
+                    [Op.or]: ["Đã xác nhận", "Đang đóng hàng"],
+                },
             }
         });
 
