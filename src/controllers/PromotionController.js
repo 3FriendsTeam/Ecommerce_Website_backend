@@ -38,7 +38,7 @@ const deletePromotion = async (req, res) => {
 };
 const updatePromotion = async (req, res) => {
     try {
-        const { id } = req.params;
+        const { id } = req.query;
         const { PromotionName, DiscountValue, Quantity, MinValue, MaxDiscount, Code, StartDate, EndDate, CreatedBy } = req.body;
 
         const promotion = await Promotion.findOne({ where: { id } });
