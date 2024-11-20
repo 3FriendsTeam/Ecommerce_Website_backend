@@ -44,7 +44,7 @@ const {
 const { createEmployee, getAllEmployee, LoginEmployee, updatePassword, deleteEmployeeById, LockEmployee, UnLockEmployee, updateEmployee } = require('../controllers/EmployeeController');
 const { getPromotionById, createPromotion, deletePromotion, updatePromotion, getAllPromotion } = require('../controllers/PromotionController');
 const { getAllMethodPayment, updateStatusMethodPayment } = require('../controllers/PaymentMethodController');
-const { getAllOrders, getOrderById, getNewOrders, updateOrderStatus } = require('../controllers/OrderController');
+const { getAllOrders, getOrderById, getNewOrders, updateOrderStatus, getShipingOrders, getPackingOrders } = require('../controllers/OrderController');
 
 
 const router = express.Router();
@@ -74,7 +74,7 @@ router.get('/get-low-stock-products', getLowStockProucts);
 //router category
 router.get('/categories', getCategories);
 router.post('/create-categories', createCategory);
-router.patch('/update-categories', updateCategory);
+router.put('/update-categories', updateCategory);
 router.delete('/delete-categories', deleteCategory);
 router.get('/get-category-by-id', getCategoryById);
 router.get('/get-all-manufacturer-Of-Product-By-Category',getAllManufacturerOfProduct);
@@ -109,6 +109,8 @@ router.get('/orders', getAllOrders);
 router.get('/get-order-by-id', getOrderById);
 router.get('/new-orders', getNewOrders);
 router.post('/update-order-status', updateOrderStatus);
+router.get('/shiping-orders', getShipingOrders);
+router.get('/packing-orders',getPackingOrders);
 //router Employee
 router.post('/create-employee', createEmployee);
 router.get('/employees', getAllEmployee);

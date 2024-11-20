@@ -56,6 +56,58 @@ const getNewOrders = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+const getShipingOrders = async (req, res) => {
+    try {
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 90); 
+
+        const orders = await OrderCustomer.findAll({
+            attributes: [
+                "id",
+                "OrderDate", 
+                "OrderStatus", 
+                "TotalAmount", 
+                "PaymentMethodID", 
+                "PaymentStatus", 
+                "PaymentDate", 
+                "CustomerID"
+            ],
+            where: {
+                OrderStatus: "Chờ giao hàng",
+            }
+        });
+
+        res.status(200).json(orders);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+const getPackingOrders = async (req, res) => {
+    try {
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 90); 
+
+        const orders = await OrderCustomer.findAll({
+            attributes: [
+                "id",
+                "OrderDate", 
+                "OrderStatus", 
+                "TotalAmount", 
+                "PaymentMethodID", 
+                "PaymentStatus", 
+                "PaymentDate", 
+                "CustomerID"
+            ],
+            where: {
+                OrderStatus: "Đã xác nhận",
+            }
+        });
+
+        res.status(200).json(orders);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
 const updateOrderStatus = async (req, res) => {
     try {
         const { id } = req.query;
@@ -131,5 +183,7 @@ module.exports = {
     getAllOrders,
     getOrderById,
     getNewOrders,
-    updateOrderStatus
+    updateOrderStatus,
+    getShipingOrders,
+    getPackingOrders
  };
