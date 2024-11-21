@@ -44,7 +44,7 @@ const {
 const { createEmployee, getAllEmployee, LoginEmployee, updatePassword, deleteEmployeeById, LockEmployee, UnLockEmployee, updateEmployee } = require('../controllers/EmployeeController');
 const { getPromotionById, createPromotion, deletePromotion, updatePromotion, getAllPromotion } = require('../controllers/PromotionController');
 const { getAllMethodPayment, updateStatusMethodPayment } = require('../controllers/PaymentMethodController');
-const { getAllOrders, getOrderById, getNewOrders, updateOrderStatus, getShipingOrders, getPackingOrders } = require('../controllers/OrderController');
+const { getAllOrders, getOrderById, getNewOrders, updateOrderStatus, getShipingOrders, getPackingOrders, getCompleteOrders } = require('../controllers/OrderController');
 
 
 const router = express.Router();
@@ -66,6 +66,7 @@ router.patch('/update-manufacturers', updateManufacturer);
 router.delete('/delete-manufacturers', deleteManufacturer);
 
 //router product
+router.post('/create-product', createProduct);
 router.get('/products', getProducts)
 router.get('/search-products', SearchProduct);
 router.get('/get-product-by-id-category', getProductsByIdCategory);
@@ -111,6 +112,7 @@ router.get('/new-orders', getNewOrders);
 router.post('/update-order-status', updateOrderStatus);
 router.get('/shiping-orders', getShipingOrders);
 router.get('/packing-orders',getPackingOrders);
+router.get('/get-complete-orders',getCompleteOrders);
 //router Employee
 router.post('/create-employee', createEmployee);
 router.get('/employees', getAllEmployee);
