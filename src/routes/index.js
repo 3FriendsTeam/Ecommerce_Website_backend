@@ -6,12 +6,13 @@ const {
     getProductsByIdCategory,
     getProductsById,
     getLowStockProucts,
+    getDiscontinuedProducts,
+    deleteProduct,
+    updateProduct,
   } = require('../controllers/productController');
 const { 
     getCategories, 
-    createCategory, 
     updateCategory, 
-    deleteCategory, 
     getCategoryById,
     getAllManufacturerOfProduct} = require('../controllers/categoryController'); 
 const {
@@ -72,11 +73,12 @@ router.get('/search-products', SearchProduct);
 router.get('/get-product-by-id-category', getProductsByIdCategory);
 router.get('/get-product-by-id', getProductsById);
 router.get('/get-low-stock-products', getLowStockProucts);
+router.get('/get-discontinued-products',getDiscontinuedProducts);
+router.delete('/delete-product',deleteProduct);
+router.put('/update-product',updateProduct);
 //router category
 router.get('/categories', getCategories);
-router.post('/create-categories', createCategory);
 router.put('/update-categories', updateCategory);
-router.delete('/delete-categories', deleteCategory);
 router.get('/get-category-by-id', getCategoryById);
 router.get('/get-all-manufacturer-Of-Product-By-Category',getAllManufacturerOfProduct);
 

@@ -1,4 +1,4 @@
-const { Op } = require('sequelize');
+const { Op, where } = require('sequelize');
 const { Product, Category, WarrantyPolicy, CountryOfOrigin, Manufacturer, ProductAttributeDetail,ProductAttribute, Image, Color, ReturnDetail, Review, sequelize } = require('../models');
 
 
@@ -49,7 +49,20 @@ const getProductsById = async (req, res) => {
 
 const getProducts = async (req, res) => {
     try {
-      const products = await Product.findAll();
+      const products = await Product.findAll(
+        {where:{IsDeleted:0}}
+      );
+      res.json(products);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+
+  const getDiscontinuedProducts = async (req, res) => {
+    try {
+      const products = await Product.findAll(
+        {where:{IsDeleted:1}}
+      );
       res.json(products);
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -134,6 +147,22 @@ const getProducts = async (req, res) => {
     }
   };
   
+const deleteProduct = async (req, res) => {
+  try{
+  const { key } = req.query;
+  console.log(key);
+  const product = await Product.findByPk(key);
+  if (!product) {
+    return res.status(404).json({ message: 'Sản phẩm không tồn tại' });
+    }
+    product.IsDeleted = 1;
+    await product.save();
+    res.status(200).json({ message: 'Xóa sản phẩm thành công' });
+  }catch(error){
+    console.error('Lỗi khi xóa sản phẩm:', error);
+    res.status(500).json({ message: 'Lỗi khi xóa sản phẩm' });
+  }
+  }
 const SearchProduct = async (req, res) => {
     try {
         const { name, category } = req.query;
@@ -160,13 +189,136 @@ const SearchProduct = async (req, res) => {
     }
 };
 
+const updateProduct = async (req, res) => {
+  const transaction = await sequelize.transaction();
+
+  try {
+    const { id } = req.query; // Get product ID from query parameters
+    const { updatedProduct, nameEmployee } = req.body; // Get updated product data and employee name from request body
+    const {
+      ProductName,
+      ListedPrice,
+      RepresentativeImage,
+      Description,
+      PromotionalPrice,
+      CategoryID,
+      WarrantyPolicyID,
+      ManufacturerID,
+      CountryID,
+      Colors, // Array of colors
+      ProductAttributeDetails, // Array of attribute details
+      Images, // Array of images
+    } = updatedProduct;
+
+    // Validate product ID
+    if (!id) {
+      return res.status(400).json({ message: "Product ID is required." });
+    }
+
+    // Find the product in the database
+    const product = await Product.findByPk(id, { transaction });
+    if (!product) {
+      return res.status(404).json({ message: "Product not found." });
+    }
+
+    // Update main product details
+    await product.update(
+      {
+        ProductName,
+        ListedPrice,
+        PromotionalPrice,
+        Description,
+        ManufacturerID,
+        CategoryID,
+        WarrantyPolicyID,
+        CountryID,
+        RepresentativeImage,
+        UpdatedBy: nameEmployee,
+      },
+      { transaction }
+    );
+
+    // Update Colors
+    if (Colors && Array.isArray(Colors)) {
+      // Delete old colors
+      await Color.destroy({ where: { ProductID: id }, transaction });
+
+      // Prepare new color data
+      const colorData = Colors.map((color) => ({
+        ProductID: id,
+        ColorName: color.ColorName,
+      }));
+
+      // Bulk create new colors
+      await Color.bulkCreate(colorData, { transaction });
+    }
+
+    // Update ProductAttributeDetails
+    if (ProductAttributeDetails && Array.isArray(ProductAttributeDetails)) {
+      // Delete old attribute details
+      await ProductAttributeDetail.destroy({ where: { ProductID: id }, transaction });
+
+      // Ensure attributes exist or create them
+      for (const attrDetail of ProductAttributeDetails) {
+        let attribute = await ProductAttribute.findOne({
+          where: { AttributeName: attrDetail.AttributeName },
+          transaction,
+        });
+
+        if (!attribute) {
+          attribute = await ProductAttribute.create(
+            { AttributeName: attrDetail.AttributeName },
+            { transaction }
+          );
+        }
+
+        // Create new attribute detail
+        await ProductAttributeDetail.create(
+          {
+            ProductID: id,
+            AttributeID: attribute.id,
+            AttributeValue: attrDetail.AttributeValue,
+          },
+          { transaction }
+        );
+      }
+    }
+
+    // Update Images
+    if (Images && Array.isArray(Images)) {
+      // Delete old images
+      await Image.destroy({ where: { ProductID: id }, transaction });
+
+      // Prepare new image data
+      const imageData = Images.map((image, index) => ({
+        ProductID: id,
+        FilePath: image.FilePath,
+        ThuTu: image.ThuTu || index + 1,
+      }));
+
+      // Bulk create new images
+      await Image.bulkCreate(imageData, { transaction });
+    }
+
+    // Commit the transaction
+    await transaction.commit();
+
+    res.status(200).json({ message: "Product updated successfully." });
+  } catch (error) {
+    // Rollback the transaction in case of error
+    await transaction.rollback();
+    console.error("Error updating product:", error);
+    res.status(500).json({ message: "An error occurred. Please try again later." });
+  }
+};
+
 
 const getLowStockProucts = async (req, res) => {
   try {
     const lowStockProducts = await Product.findAll({
       where: {
-        Stock: { [Op.lt]: 10 },
-      },
+        Stock: { [Op.lt]: 10 }
+      }
     });
     res.status(200).json(lowStockProducts);
   } catch (error) {
@@ -175,15 +327,6 @@ const getLowStockProucts = async (req, res) => {
 }
 
 
-const getAllManufacturerOfProduct = async (req, res) => {
-    try{
-      const { id } = req.query;
-      const policies = await Policy.findAll({where:{ProductID:id}}); 
-      res.status(200).json(policies);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-}
 
 module.exports = {
   getProducts,
@@ -191,5 +334,8 @@ module.exports = {
   SearchProduct,
   getProductsByIdCategory,
   getProductsById,
-  getLowStockProucts
+  getLowStockProucts,
+  deleteProduct,
+  getDiscontinuedProducts,
+  updateProduct
 };
