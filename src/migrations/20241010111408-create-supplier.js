@@ -28,6 +28,10 @@ module.exports = {
           isEmail: true // Kiểm tra định dạng email nếu cần thiết
         }
       },
+      Status: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: true
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       // Một Supplier có nhiều DeliveryReceipt
+    this.hasMany(models.ProductSupplierDetails, { foreignKey: 'SupplierID' });
     this.hasMany(models.DeliveryReceipt, { foreignKey: 'SupplierID' });
   }
   }
@@ -19,7 +20,8 @@ module.exports = (sequelize, DataTypes) => {
     SupplierName: DataTypes.STRING,
     Address: DataTypes.STRING,
     PhoneNumber: DataTypes.STRING,
-    Email: DataTypes.STRING
+    Email: DataTypes.STRING,
+    Status: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'Supplier',

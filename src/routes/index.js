@@ -46,6 +46,8 @@ const { createEmployee, getAllEmployee, LoginEmployee, updatePassword, deleteEmp
 const { getPromotionById, createPromotion, deletePromotion, updatePromotion, getAllPromotion } = require('../controllers/PromotionController');
 const { getAllMethodPayment, updateStatusMethodPayment } = require('../controllers/PaymentMethodController');
 const { getAllOrders, getOrderById, getNewOrders, updateOrderStatus, getShipingOrders, getPackingOrders, getCompleteOrders } = require('../controllers/OrderController');
+const { revenueByDate, revenueByWeek, revenueByMonth, revenueByYear, customRangeRevenue, summaryData } = require('../controllers/RevenueController');
+const { getAllSupplier, addSupplier, updateSupplier, updateSupplierStatus } = require('../controllers/SupplierController');
 
 
 const router = express.Router();
@@ -132,8 +134,19 @@ router.get('/positions', getAllPosition);
 router.get('/method-payment', getAllMethodPayment);
 router.post('/update-status-method-payment', updateStatusMethodPayment);
 
+router.get('/revenue-by-date', revenueByDate);
+router.get('/revenue-by-week', revenueByWeek);
+router.get('/revenue-by-month', revenueByMonth);
+router.get('/revenue-by-year', revenueByYear);
+router.get('/custom-range-revenue', customRangeRevenue);
+router.get('/summary-data', summaryData);
 
 
+// router supplier
+router.get('/suppliers', getAllSupplier);
+router.post('/create-supplier', addSupplier);
+router.put('/update-supplier', updateSupplier);
+router.patch('/update-supplier-status', updateSupplierStatus);
 //#endregion
 
 

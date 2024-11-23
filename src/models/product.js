@@ -10,7 +10,9 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-       // Mỗi Product thuộc về một Category
+    // Một Product có nhiều ProductSupplierDetails
+    this.hasMany(models.ProductSupplierDetails, { foreignKey: 'ProductID' });
+    // Mỗi Product thuộc về một Category
     this.belongsTo(models.Category, { foreignKey: 'CategoryID' });
     // Mỗi Product thuộc về một WarrantyPolicy
     this.belongsTo(models.WarrantyPolicy, { foreignKey: 'WarrantyPolicyID' });
