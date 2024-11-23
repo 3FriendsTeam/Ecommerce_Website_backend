@@ -120,11 +120,12 @@ const updateEmployee = async (req, res) => {
 };
 
 const resetPassword = async (req, res) => {
-  const { id, password } = req.body;
+  const { id } = req.body;
   try {
     const user = await Employee.findOne({ where: { id } });
     if (user) {
-      const hashedPassword = bcrypt.hashSync(password, 10);
+      const newPassword = (user.Username);
+      const hashedPassword = bcrypt.hashSync(newPassword, 10);
       await user.update({ Password: hashedPassword });
       res.status(200).json({ message: "Password updated successfully" });
     } else {
