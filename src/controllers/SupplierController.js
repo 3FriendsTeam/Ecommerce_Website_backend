@@ -5,7 +5,6 @@ const { Op } = require('sequelize');
 const getAllSupplier = async (req, res) => {
   try {
     const suppliers = await Supplier.findAll({
-       // Chỉ lấy nhà cung cấp chưa bị xóa
       include: [
         {
           model: ProductSupplierDetails,
@@ -25,19 +24,19 @@ const getAllSupplier = async (req, res) => {
       Address: supplier.Address,
       PhoneNumber: supplier.PhoneNumber,
       Email: supplier.Email,
+      Status: supplier.Status,
       Products: supplier.ProductSupplierDetails.map((detail) => ({
         ProductID: detail.Product?.id,
         ProductName: detail.Product?.ProductName,
         StartDate: detail.StartDate,
-        EndDate: detail.EndDate,
-        Status: detail.Status,
+        EndDate: detail.EndDate
       })),
     }));
 
     return res.status(200).json(result);
   } catch (error) {
     console.error('Error fetching suppliers with products:', error);
-    return res.status(500).json({ message: error });
+    return res.status(500).json({ message: error.message });
   }
 };
 
