@@ -5,7 +5,7 @@ const { Op } = require('sequelize');
 const getAllSupplier = async (req, res) => {
   try {
     const suppliers = await Supplier.findAll({
-      where: { Status: 1 }, // Chỉ lấy nhà cung cấp chưa bị xóa
+       // Chỉ lấy nhà cung cấp chưa bị xóa
       include: [
         {
           model: ProductSupplierDetails,
