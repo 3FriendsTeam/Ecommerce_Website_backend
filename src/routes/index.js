@@ -46,7 +46,7 @@ const { createEmployee, getAllEmployee, LoginEmployee, updatePassword, deleteEmp
 const { getPromotionById, createPromotion, deletePromotion, updatePromotion, getAllPromotion } = require('../controllers/PromotionController');
 const { getAllMethodPayment, updateStatusMethodPayment } = require('../controllers/PaymentMethodController');
 const { getAllOrders, getOrderById, getNewOrders, updateOrderStatus, getShipingOrders, getPackingOrders, getCompleteOrders } = require('../controllers/OrderController');
-const { revenueByDate, revenueByWeek, revenueByMonth, revenueByYear, customRangeRevenue, summaryData } = require('../controllers/RevenueController');
+const { revenueByDate, revenueByWeek, revenueByMonth, revenueByYear, customRangeRevenue } = require('../controllers/RevenueController');
 const { getAllSupplier, addSupplier, updateSupplier, updateSupplierStatus } = require('../controllers/SupplierController');
 
 
@@ -139,7 +139,7 @@ router.get('/revenue-by-week', revenueByWeek);
 router.get('/revenue-by-month', revenueByMonth);
 router.get('/revenue-by-year', revenueByYear);
 router.get('/custom-range-revenue', customRangeRevenue);
-router.get('/summary-data', summaryData);
+
 
 
 // router supplier
