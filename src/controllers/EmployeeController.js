@@ -7,9 +7,9 @@ const nodemailer = require('nodemailer');
 
 const createEmployee = async (req, res) => {
     try{
-    const {newEmployee, AdminName} = req.body;
+    const {newEmployee, nameAdmin} = req.body;
     const hashedPassword = bcrypt.hashSync(newEmployee.Password, 10);
-    const employee = await Employee.create({ Username: newEmployee.Username, Password: hashedPassword, PositionID: newEmployee.PositionID, FullName: newEmployee.FullName, DateOfBirth: newEmployee.DateOfBirth, Gender: newEmployee.Gender, Address: newEmployee.Address, Email: newEmployee.Email, PhoneNumber: newEmployee.PhoneNumber,CreatedBy: AdminName});
+    const employee = await Employee.create({ Username: newEmployee.Username, Password: hashedPassword, PositionID: newEmployee.PositionID, FullName: newEmployee.FullName, DateOfBirth: newEmployee.DateOfBirth, Gender: newEmployee.Gender, Address: newEmployee.Address, Email: newEmployee.Email, PhoneNumber: newEmployee.PhoneNumber,CreatedBy: nameAdmin});
     res.status(201).json(employee);
     }
     catch(error){
@@ -119,6 +119,22 @@ const updateEmployee = async (req, res) => {
   }
 };
 
+const resetPassword = async (req, res) => {
+  const { id, password } = req.body;
+  try {
+    const user = await Employee.findOne({ where: { id } });
+    if (user) {
+      const hashedPassword = bcrypt.hashSync(password, 10);
+      await user.update({ Password: hashedPassword });
+      res.status(200).json({ message: "Password updated successfully" });
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 const forgotPassword = async (req, res) => {
   const { emailOrUsername } = req.body;
 
@@ -163,5 +179,6 @@ module.exports = {
     deleteEmployeeById,
     LockEmployee,
     UnLockEmployee,
-    updateEmployee
+    updateEmployee,
+    resetPassword
 }

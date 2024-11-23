@@ -42,7 +42,7 @@ const{
 const {
     getAllPosition,
 } = require('../controllers/PositionController');
-const { createEmployee, getAllEmployee, LoginEmployee, updatePassword, deleteEmployeeById, LockEmployee, UnLockEmployee, updateEmployee } = require('../controllers/EmployeeController');
+const { createEmployee, getAllEmployee, LoginEmployee, updatePassword, deleteEmployeeById, LockEmployee, UnLockEmployee, updateEmployee, resetPassword } = require('../controllers/EmployeeController');
 const { getPromotionById, createPromotion, deletePromotion, updatePromotion, getAllPromotion } = require('../controllers/PromotionController');
 const { getAllMethodPayment, updateStatusMethodPayment } = require('../controllers/PaymentMethodController');
 const { getAllOrders, getOrderById, getNewOrders, updateOrderStatus, getShipingOrders, getPackingOrders, getCompleteOrders } = require('../controllers/OrderController');
@@ -124,6 +124,7 @@ router.delete('/delete-employee-by-id', deleteEmployeeById);
 router.post('/lock-employee', LockEmployee);
 router.post('/unlock-employee', UnLockEmployee);
 router.put('/update-employee', updateEmployee);
+router.put('/reset-password', resetPassword);
 //router position
 router.get('/positions', getAllPosition);
 
