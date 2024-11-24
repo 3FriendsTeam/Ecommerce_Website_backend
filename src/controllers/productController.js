@@ -28,7 +28,7 @@ const getProductsById = async (req, res) => {
         { model: WarrantyPolicy },
         { model: CountryOfOrigin },
         { model: Manufacturer },
-        { model: ProductAttributeDetail },
+        { model: ProductAttributeDetail, include: [{ model: ProductAttribute }] },
         { model: Image },
         { model: Color },
         { model: ReturnDetail },

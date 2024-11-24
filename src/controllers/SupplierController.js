@@ -40,6 +40,56 @@ const getAllSupplier = async (req, res) => {
   }
 };
 
+const getSupplier = async (req, res) => {
+  try {
+    const suppliers = await Supplier.findAll();
+    return res.status(200).json(suppliers);
+  } catch (error) {
+    console.error('Error fetching suppliers:', error);
+    return res.status(500).json({ message: error.message });
+  }
+}
+
+const getSupplierById = async (req, res) => {
+  try {
+    const { supplierId } = req.query;
+    const supplier = await Supplier.findByPk(supplierId, {
+      include: [
+        {
+          model: ProductSupplierDetails,
+          include: [
+            {
+              model: Product,
+              attributes: ['id', 'ProductName'],
+            },
+          ],
+        },
+      ],
+    });
+
+    if (!supplier) {
+      return res.status(404).json({ message: 'Supplier not found.' });
+    }
+
+    const result = {
+      SupplierID: supplier.id,
+      SupplierName: supplier.SupplierName,
+      Address: supplier.Address,
+      PhoneNumber: supplier.PhoneNumber,
+      Email: supplier.Email,
+      Status: supplier.Status,
+      Products: supplier.ProductSupplierDetails.map((detail) => ({
+        ProductID: detail.Product?.id,
+        ProductName: detail.Product?.ProductName
+      }))
+    }
+
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error('Error fetching supplier:', error);
+    return res.status(500).json({ message: error.message });
+  }
+};
 
 const addSupplier = async (req, res) => {
   const { SupplierName, Address, PhoneNumber, Email, Products } = req.body;
@@ -184,7 +234,7 @@ const updateSupplier = async (req, res) => {
   }
 };
 
-// Hàm xóa nhà cung cấp (cập nhật trạng thái)
+ 
 const updateSupplierStatus = async (req, res) => {
   const { id } = req.query; // ID của nhà cung cấp cần cập nhật
   const { Status } = req.body; // Trạng thái mới
@@ -213,4 +263,6 @@ module.exports = {
   addSupplier,
   updateSupplier,
   updateSupplierStatus,
+  getSupplierById,
+  getSupplier
 };

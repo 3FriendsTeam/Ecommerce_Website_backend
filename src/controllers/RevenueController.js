@@ -204,7 +204,8 @@ const customRangeRevenue = async (req, res) => {
             ],
             where: {
                 OrderDate: {
-                    [Op.between]: [startDateParsed, endDateParsed],
+                    [Op.gte]: startDateParsed,
+                    [Op.lte]: endDateParsed,
                 },
                 PaymentStatus: true,
             },
