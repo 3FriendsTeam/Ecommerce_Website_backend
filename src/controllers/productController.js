@@ -329,14 +329,20 @@ const getLowStockProucts = async (req, res) => {
 const reView = async(req,res)=>
 {
   try {
+    const token = req.headers.authorization?.split(" ")[1];
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    const uid = decodedToken.uid;
+    if (!uid) {
+      return res.status(400).json({ message: 'Customer ID is required.' });
+    }
     const {id} = req.query;
-    const {RatingLevel,ReviewContent, ReviewDate, CustomerID} = req.body;
+    const {RatingLevel,ReviewContent, ReviewDate} = req.body;
     const review = await Review.create({
       RatingLevel: RatingLevel,
       ReviewContent: ReviewContent,
       ReviewDate: ReviewDate,
       ProductID: id,
-      CustomerID: CustomerID
+      CustomerID: uid
     });
     res.status(200).json(review);
   } catch (error) {

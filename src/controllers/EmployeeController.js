@@ -109,7 +109,6 @@ const UnLockEmployee = async (req, res) => {
 
 const updateEmployee = async (req, res) => {
   const { id ,values } = req.body;
-  console.log(id,values);
   try {
     const employee = await Employee.update({ FullName: values.FullName, DateOfBirth: values.DateOfBirth, Gender: values.Gender, Address: values.Address, Email: values.Email, PhoneNumber: values.PhoneNumber}, { where: { id: id }});
     console.log(employee);
