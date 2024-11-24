@@ -9,6 +9,7 @@ const {
     getDiscontinuedProducts,
     deleteProduct,
     updateProduct,
+    reView,
   } = require('../controllers/productController');
 const { 
     getCategories, 
@@ -106,7 +107,7 @@ router.post('/create-country-of-origin', CreateCountryOfOrigin);
 //router order
 router.get('/get-orders-by-id-customer',getOrdersByIdCustomer);
 router.get('/get-order-customer-detail',getOrderCustomerDetail);
-
+router.post('/re-view',reView);
 //#region Admin
 //router Admin
 

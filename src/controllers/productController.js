@@ -326,7 +326,23 @@ const getLowStockProucts = async (req, res) => {
   }
 }
 
-
+const reView = async(req,res)=>
+{
+  try {
+    const {id} = req.query;
+    const {RatingLevel,ReviewContent, ReviewDate, CustomerID} = req.body;
+    const review = await Review.create({
+      RatingLevel: RatingLevel,
+      ReviewContent: ReviewContent,
+      ReviewDate: ReviewDate,
+      ProductID: id,
+      CustomerID: CustomerID
+    });
+    res.status(200).json(review);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
 
 module.exports = {
   getProducts,
@@ -337,5 +353,6 @@ module.exports = {
   getLowStockProucts,
   deleteProduct,
   getDiscontinuedProducts,
-  updateProduct
+  updateProduct,
+  reView
 };

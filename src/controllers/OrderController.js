@@ -239,7 +239,7 @@ const getOrdersByIdCustomer = async (req, res) => {
                         Sequelize.literal(`(
                             SELECT SUM("TotalAmount")
                             FROM "OrderCustomers"
-                            WHERE "CustomerID" = '${customerId}'
+                            WHERE "CustomerID" = '${uid}'
                         )`),
                         'SumTotalAmount',
                     ],
@@ -247,7 +247,7 @@ const getOrdersByIdCustomer = async (req, res) => {
                         Sequelize.literal(`(
                             SELECT COUNT(*)
                             FROM "OrderCustomers"
-                            WHERE "CustomerID" = '${customerId}'
+                            WHERE "CustomerID" = '${uid}'
                         )`),
                         'CountOrders',
                     ]
