@@ -48,7 +48,7 @@ const { getAllMethodPayment, updateStatusMethodPayment } = require('../controlle
 const { getAllOrders, getOrderById, getNewOrders, updateOrderStatus, getShipingOrders, getPackingOrders, getCompleteOrders } = require('../controllers/OrderController');
 const { revenueByDate, revenueByWeek, revenueByMonth, revenueByYear, customRangeRevenue } = require('../controllers/RevenueController');
 const { getAllSupplier, addSupplier, updateSupplier, updateSupplierStatus, getSupplierById, getSupplier } = require('../controllers/SupplierController');
-const { getDeliveryReceipts, createDeliveryReceipt, getDeliveryReceiptDetails, updateDeliveryReceipt } = require('../controllers/DeliveryreceiptController');
+const { getDeliveryReceipts, createDeliveryReceipt, getDeliveryReceiptDetails, updateDeliveryReceipt, updateStatusDeliveryreceipt } = require('../controllers/DeliveryreceiptController');
 
 
 const router = express.Router();
@@ -156,7 +156,7 @@ router.get('/get-delivery-receipt', getDeliveryReceipts);
 router.get('/get-delivery-receipt-by-id', getDeliveryReceiptDetails);
 router.post('/create-delivery-receipt',createDeliveryReceipt);
 router.put('/update-delivery-receipt',updateDeliveryReceipt);
-
+router.put('/update-status-delivery-receipt',updateStatusDeliveryreceipt);
 
 
 

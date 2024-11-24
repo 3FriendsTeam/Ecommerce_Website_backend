@@ -5,9 +5,9 @@ const { DeliveryReceipt,
  } = require("../models");
 
 const createDeliveryReceipt = async (req, res) => {
-    const { DeliveryDate, Notes, SupplierID, EmployeeID, Products } = req.body;
+    const { DeliveryDate, Notes, SupplierID, EmployeeID,Status = "Chờ xử lý", Products } = req.body;
     try {
-      const receipt = await DeliveryReceipt.create({ DeliveryDate: DeliveryDate, Notes : Notes, SupplierID: SupplierID, EmployeeID: EmployeeID, Details: Products });
+      const receipt = await DeliveryReceipt.create({ DeliveryDate: DeliveryDate, Notes : Notes, SupplierID: SupplierID, EmployeeID: EmployeeID,Status: Status, Details: Products });
       if (Products && Products.length > 0) {
         const receiptDetails = Products.map((detail) => ({
           ...detail,
@@ -108,11 +108,29 @@ const createDeliveryReceipt = async (req, res) => {
     }
   };
   
+  const updateStatusDeliveryreceipt = async (req, res) => {
+    const { id } = req.query; // Lấy id từ URL
+    const { status } = req.body; // Lấy trạng thái từ body
+    try {
+      // Cập nhật trạng thái phiếu nhập hàng
+      const receipt = await DeliveryReceipt.update({ Status: status }, {
+        where: { ID: id },
+      });
+      if (!receipt) {
+        return res.status(404).json({ message: 'Delivery receipt not found' });
+      }
+        res.status(200).json({ message: 'Delivery receipt status updated successfully!' });
+    } catch (error) {
+      res.status(500).json({ message: 'Error updating delivery receipt status', error });
+    }
+};
+
 
 
   module.exports = { 
     createDeliveryReceipt,
     getDeliveryReceipts,
     updateDeliveryReceipt,
-    getDeliveryReceiptDetails
+    getDeliveryReceiptDetails,
+    updateStatusDeliveryreceipt
   };
