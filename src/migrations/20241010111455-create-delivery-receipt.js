@@ -37,6 +37,10 @@ module.exports = {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE' // Đảm bảo tính nhất quán khi Employee bị cập nhật
       },
+      Status: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

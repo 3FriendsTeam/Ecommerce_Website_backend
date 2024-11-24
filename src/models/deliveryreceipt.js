@@ -23,7 +23,8 @@ module.exports = (sequelize, DataTypes) => {
     DeliveryDate: DataTypes.DATE,
     Notes: DataTypes.TEXT,
     SupplierID: DataTypes.INTEGER,
-    EmployeeID: DataTypes.INTEGER
+    EmployeeID: DataTypes.INTEGER,
+    Status: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'DeliveryReceipt',
