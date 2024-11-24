@@ -55,12 +55,12 @@ const createDeliveryReceipt = async (req, res) => {
 
   const updateDeliveryReceipt = async (req, res) => {
     const { id } = req.query;
-    const { DeliveryDate, Notes, SupplierID, EmployeeID, Details } = req.body;
+    const { DeliveryDate, Notes, Details } = req.body;
     try {
       const receipt = await DeliveryReceipt.findByPk(id);
       if (!receipt) return res.status(404).json({ message: 'Receipt not found' });
   
-      await receipt.update({ DeliveryDate, Notes, SupplierID, EmployeeID });
+      await receipt.update({ DeliveryDate, Notes });
   
       if (Details && Details.length > 0) {
         await DeliveryReceiptDetail.destroy({ where: { ReceiptID: id } });

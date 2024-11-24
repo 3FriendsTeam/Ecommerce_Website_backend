@@ -62,7 +62,6 @@ const getCustomerInfo = async (req, res) => {
         const decodedToken = await admin.auth().verifyIdToken(token);
         const uid = decodedToken.uid;
         const user = await Customer.findOne({ where: { id: uid } });
-        console.log(user);
         res.status(200).json(user);
     } catch (error) {
         console.error(error);

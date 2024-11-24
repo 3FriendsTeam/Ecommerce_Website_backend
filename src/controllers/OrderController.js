@@ -1,6 +1,6 @@
-const { OrderCustomer, OrderProductDetail, Product } = require('../models');
-
-const { Op } = require("sequelize"); 
+const { OrderCustomer, OrderProductDetail, Product,ShippingAddress } = require('../models');
+const admin = require('../config/firebaseAdmin.js');
+const { Op, Sequelize } = require("sequelize"); 
 
 const getAllOrders = async (req, res) => {
     try {
@@ -209,6 +209,105 @@ const getOrderById = async (req, res) => {
 };
 
 
+
+
+const getOrdersByIdCustomer = async (req, res) => {
+    try {
+        const token = req.headers.authorization?.split(" ")[1];
+        const decodedToken = await admin.auth().verifyIdToken(token);
+        const uid = decodedToken.uid;
+        if (!uid) {
+            return res.status(400).json({ message: 'Customer ID is required.' });
+        }
+        // Lấy danh sách đơn hàng của khách hàng
+        const orders = await OrderCustomer.findAll({
+            where: { CustomerID: uid },
+            include: [
+                {
+                    model: OrderProductDetail,
+                    include: [
+                        {
+                            model: Product,
+                            attributes: ['ProductName', 'ListedPrice', 'PromotionalPrice', 'RepresentativeImage'],
+                        },
+                    ],
+                },
+            ],
+            attributes: {
+                include: [
+                    [
+                        Sequelize.literal(`(
+                            SELECT SUM("TotalAmount")
+                            FROM "OrderCustomers"
+                            WHERE "CustomerID" = '${customerId}'
+                        )`),
+                        'SumTotalAmount',
+                    ],
+                    [
+                        Sequelize.literal(`(
+                            SELECT COUNT(*)
+                            FROM "OrderCustomers"
+                            WHERE "CustomerID" = '${customerId}'
+                        )`),
+                        'CountOrders',
+                    ]
+                ]
+            }
+        });
+
+        return res.status(200).json(orders);
+    } catch (error) {
+        console.error('Error fetching customer orders:', error);
+        return res.status(500).json({ message: 'Internal Server Error', error: error.message });
+    }
+};
+
+
+const getOrderCustomerDetail = async(req, res)=>
+{
+    try {
+        const id = req.query.id;
+        const order =  await OrderCustomer.findByPk(id, {
+            attributes: [
+                "id", 
+                "OrderDate", 
+                "OrderStatus", 
+                "TotalAmount", 
+                "PaymentMethodID", 
+                "PaymentStatus", 
+                "PaymentDate", 
+                "CustomerID",
+            ],
+            include: [
+                {
+                    model: OrderProductDetail,
+                    attributes: ["OrderID", "ProductID", "UnitPrice", "Quantity", "Notes"],
+                    include: [
+                        {
+                            model: Product,
+                            attributes: [
+                                "ProductName",
+                                "PromotionalPrice",
+                                "RepresentativeImage",
+                            ],
+                        },
+                    ],
+                },
+                {
+                    model: ShippingAddress,
+                    attributes:["RecipientName", "PhoneNumber", "City", "District", "Ward", "SpecificAddress"],
+                }
+            ],});
+            if (!order) {
+                return res.status(404).json({ error: "Order not found" });
+            }
+            res.status(200).json(order);
+        }catch(error){
+            return res.status(404).json({ message: 'Order not found 1' , error:error.message});
+        }
+};
+                    
+
 module.exports = { 
     getAllOrders,
     getOrderById,
@@ -216,5 +315,7 @@ module.exports = {
     updateOrderStatus,
     getShipingOrders,
     getPackingOrders,
-    getCompleteOrders
+    getCompleteOrders,
+    getOrdersByIdCustomer,
+    getOrderCustomerDetail
  };
