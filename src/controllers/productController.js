@@ -1,6 +1,6 @@
 const { Op, where } = require('sequelize');
 const { Product, Category, WarrantyPolicy, CountryOfOrigin, Manufacturer, ProductAttributeDetail,ProductAttribute, Image, Color, ReturnDetail, Review, sequelize } = require('../models');
-
+const admin = require('../config/firebaseAdmin.js');
 
 const getProductsByIdCategory = async (req, res) => {
   try {
@@ -350,6 +350,20 @@ const reView = async(req,res)=>
   }
 }
 
+const getProductsByManufacturer = async (req, res) => {
+  try {
+    const { id } = req.query;
+    const products = await Product.findAll({
+      where: {
+        ManufacturerID: id,
+      },
+    });
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 module.exports = {
   getProducts,
   createProduct,
@@ -360,5 +374,6 @@ module.exports = {
   deleteProduct,
   getDiscontinuedProducts,
   updateProduct,
-  reView
+  reView,
+  getProductsByManufacturer
 };

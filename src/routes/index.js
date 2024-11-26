@@ -10,6 +10,7 @@ const {
     deleteProduct,
     updateProduct,
     reView,
+    getProductsByManufacturer,
   } = require('../controllers/productController');
 const { 
     getCategories, 
@@ -80,6 +81,7 @@ router.get('/get-low-stock-products', getLowStockProucts);
 router.get('/get-discontinued-products',getDiscontinuedProducts);
 router.delete('/delete-product',deleteProduct);
 router.put('/update-product',updateProduct);
+router.get('/get-products-by-id-manufacturer', getProductsByManufacturer);
 //router category
 router.get('/categories', getCategories);
 router.put('/update-categories', updateCategory);
