@@ -1,5 +1,5 @@
 const { Op, where } = require('sequelize');
-const { Product, Category, WarrantyPolicy, CountryOfOrigin, Manufacturer, ProductAttributeDetail,ProductAttribute, Image, Color, ReturnDetail, Review, sequelize } = require('../models');
+const { Product, Category, WarrantyPolicy, CountryOfOrigin, Manufacturer, ProductAttributeDetail,ProductAttribute, Image, Color, Customer, Review, sequelize } = require('../models');
 const admin = require('../config/firebaseAdmin.js');
 
 const getProductsByIdCategory = async (req, res) => {
@@ -8,6 +8,7 @@ const getProductsByIdCategory = async (req, res) => {
     const products = await Product.findAll({
       where: {
         CategoryID: id,
+        IsDeleted: false
       },
     });
     res.json(products);
@@ -31,8 +32,7 @@ const getProductsById = async (req, res) => {
         { model: ProductAttributeDetail, include: [{ model: ProductAttribute }] },
         { model: Image },
         { model: Color },
-        { model: ReturnDetail },
-        { model: Review },
+        { model: Review, include: [{ model: Customer, attributes: ['CustomerName'] }] },
       ],
     });
     if (!product) {
@@ -50,7 +50,7 @@ const getProductsById = async (req, res) => {
 const getProducts = async (req, res) => {
     try {
       const products = await Product.findAll(
-        {where:{IsDeleted:0}}
+        {where:{IsDeleted:false}}
       );
       res.json(products);
     } catch (error) {
@@ -58,94 +58,94 @@ const getProducts = async (req, res) => {
     }
   };
 
-  const getDiscontinuedProducts = async (req, res) => {
-    try {
-      const products = await Product.findAll(
-        {where:{IsDeleted:1}}
-      );
-      res.json(products);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  };
-  const createProduct = async (req, res) => {
-    const transaction = await sequelize.transaction(); // Khởi tạo transaction
-    try {
-      // Lấy dữ liệu từ request body
-      const {newProduct, nameEmployee} = req.body;
-      const {
-        ProductName,
-        ListedPrice,
-        RepresentativeImage,
-        Description,
-        PromotionalPrice,
-        CategoryID,
-        WarrantyPolicyID,
-        ManufacturerID,
-        CountryID,
-        colors,
-        specifications,
-        Gallery,
-      } = newProduct;
-      const Stock = 0;
-      const Status = true ;
-      console.log(newProduct , nameEmployee);
-      // Tạo sản phẩm mới
-      const product = await Product.create({ProductName: ProductName, ListedPrice: ListedPrice, RepresentativeImage: RepresentativeImage, Stock: Stock, Description: Description, PromotionalPrice: PromotionalPrice, Status: Status, CategoryID: CategoryID, WarrantyPolicyID: WarrantyPolicyID, ManufacturerID: ManufacturerID, CountryID: CountryID, CreatedBy: nameEmployee}, { transaction });
+const getDiscontinuedProducts = async (req, res) => {
+  try {
+    const products = await Product.findAll(
+      {where:{IsDeleted:1}}
+    );
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+const createProduct = async (req, res) => {
+  const transaction = await sequelize.transaction(); // Khởi tạo transaction
+  try {
+    // Lấy dữ liệu từ request body
+    const {newProduct, nameEmployee} = req.body;
+    const {
+      ProductName,
+      ListedPrice,
+      RepresentativeImage,
+      Description,
+      PromotionalPrice,
+      CategoryID,
+      WarrantyPolicyID,
+      ManufacturerID,
+      CountryID,
+      colors,
+      specifications,
+      Gallery,
+    } = newProduct;
+    const Stock = 0;
+    const Status = true ;
+    console.log(newProduct , nameEmployee);
+    // Tạo sản phẩm mới
+    const product = await Product.create({ProductName: ProductName, ListedPrice: ListedPrice, RepresentativeImage: RepresentativeImage, Stock: Stock, Description: Description, PromotionalPrice: PromotionalPrice, Status: Status, CategoryID: CategoryID, WarrantyPolicyID: WarrantyPolicyID, ManufacturerID: ManufacturerID, CountryID: CountryID, CreatedBy: nameEmployee}, { transaction });
   
-      const productID = product.id;
+    const productID = product.id;
   
       // Lưu ảnh vào bảng Image
-      if (Gallery && Gallery.length > 0) {
-        const images = Gallery.map((imageUrl, index) => ({
-          ProductID: productID,
-          ThuTu: index + 1,
-          FilePath: imageUrl,
-        }));
-        await Image.bulkCreate(images, { transaction });
-      }
+    if (Gallery && Gallery.length > 0) {
+      const images = Gallery.map((imageUrl, index) => ({
+        ProductID: productID,
+        ThuTu: index + 1,
+        FilePath: imageUrl,
+      }));
+      await Image.bulkCreate(images, { transaction });
+    }
   
       // Lưu màu sắc vào bảng Color
-      if (colors && colors.length > 0) {
-        const colorData = colors.map((colorName) => ({
-          ProductID: productID,
-          ColorName: colorName,
-        }));
-        await Color.bulkCreate(colorData, { transaction });
-      }
+   if (colors && colors.length > 0) {
+      const colorData = colors.map((colorName) => ({
+      ProductID: productID,
+        ColorName: colorName,
+      }));
+      await Color.bulkCreate(colorData, { transaction });
+    }
   
       // Lưu thông số kỹ thuật
-      if (specifications && specifications.length > 0) {
-        for (const spec of specifications) {
-          // Tìm hoặc tạo mới ProductAttribute
-          const [attribute] = await ProductAttribute.findOrCreate({
-            where: { AttributeName: spec.name },
-            defaults: { AttributeName: spec.name },
-            transaction,
-          });
+    if (specifications && specifications.length > 0) {
+      for (const spec of specifications) {
+        // Tìm hoặc tạo mới ProductAttribute
+        const [attribute] = await ProductAttribute.findOrCreate({
+          where: { AttributeName: spec.name },
+          defaults: { AttributeName: spec.name },
+          transaction,
+        });
   
           // Tạo mới ProductAttributeDetail
-          await ProductAttributeDetail.create(
-            {
-              ProductID: productID,
-              AttributeID: attribute.id,
-              AttributeValue: spec.value,
-            },
-            { transaction }
-          );
-        }
+        await ProductAttributeDetail.create(
+          {
+            ProductID: productID,
+            AttributeID: attribute.id,
+            AttributeValue: spec.value,
+          },
+          { transaction }
+        );
       }
+    }
   
       // Commit transaction nếu tất cả đều thành công
-      await transaction.commit();
-      res.status(201).json({ message: 'Thêm sản phẩm thành công', product });
-    } catch (error) {
+    await transaction.commit();
+    res.status(201).json({ message: 'Thêm sản phẩm thành công', product });
+  } catch (error) {
       // Rollback transaction nếu có lỗi
-      await transaction.rollback();
-      console.error('Lỗi khi thêm sản phẩm:', error);
-      res.status(500).json({ message: 'Lỗi khi thêm sản phẩm', error });
-    }
-  };
+    await transaction.rollback();
+    console.error('Lỗi khi thêm sản phẩm:', error);
+    res.status(500).json({ message: 'Lỗi khi thêm sản phẩm', error });
+  }
+};
   
 const deleteProduct = async (req, res) => {
   try{
@@ -332,6 +332,7 @@ const reView = async(req,res)=>
     const token = req.headers.authorization?.split(" ")[1];
     const decodedToken = await admin.auth().verifyIdToken(token);
     const uid = decodedToken.uid;
+    console.log(uid);
     if (!uid) {
       return res.status(400).json({ message: 'Customer ID is required.' });
     }
@@ -344,7 +345,7 @@ const reView = async(req,res)=>
       ProductID: id,
       CustomerID: uid
     });
-    res.status(200).json(review);
+    res.status(200).json({message: 'Cảm ơn bạn đã đánh giá sản phẩm của chúng tôi'});
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
