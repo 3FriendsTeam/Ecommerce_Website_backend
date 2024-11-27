@@ -1,4 +1,4 @@
-const { Op, where } = require('sequelize');
+const { Op } = require('sequelize');
 const { Product, Category, WarrantyPolicy, CountryOfOrigin, Manufacturer, ProductAttributeDetail,ProductAttribute, Image, Color, Customer, Review, sequelize } = require('../models');
 const admin = require('../config/firebaseAdmin.js');
 
@@ -45,8 +45,6 @@ const getProductsById = async (req, res) => {
   }
 };
 
-
-
 const getProducts = async (req, res) => {
     try {
       const products = await Product.findAll(
@@ -56,12 +54,12 @@ const getProducts = async (req, res) => {
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
-  };
+};
 
 const getDiscontinuedProducts = async (req, res) => {
   try {
     const products = await Product.findAll(
-      {where:{IsDeleted:1}}
+      {where:{IsDeleted:true}}
     );
     res.json(products);
   } catch (error) {
@@ -166,22 +164,16 @@ const deleteProduct = async (req, res) => {
 const SearchProduct = async (req, res) => {
     try {
         const { name, category } = req.query;
-
-        // Tạo điều kiện tìm kiếm
         const searchConditions = {};
-        
         if (name) {
-            searchConditions.ProductName = { [Op.like]: `%${name}%` }; // Tìm tên gần đúng
+            searchConditions.ProductName = { [Op.like]: `%${name}%` }; 
         }
-
         if (category) {
-            searchConditions.ProductTypeID = category; // Tìm theo danh mục
+            searchConditions.ProductTypeID = category; 
         }
-
         const products = await Product.findAll({
             where: searchConditions
         });
-
         res.status(200).json(products);
     } catch (error) {
         console.error(error);
@@ -317,7 +309,8 @@ const getLowStockProucts = async (req, res) => {
   try {
     const lowStockProducts = await Product.findAll({
       where: {
-        Stock: { [Op.lt]: 10 }
+        Stock: { [Op.lt]: 10 },
+        IsDeleted: false
       }
     });
     res.status(200).json(lowStockProducts);
@@ -357,6 +350,7 @@ const getProductsByManufacturer = async (req, res) => {
     const products = await Product.findAll({
       where: {
         ManufacturerID: id,
+        IsDeleted: false
       },
     });
     res.json(products);
@@ -364,6 +358,7 @@ const getProductsByManufacturer = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 module.exports = {
   getProducts,

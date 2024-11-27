@@ -1,5 +1,6 @@
-const { Op } = require('sequelize');
+const { Op, where } = require('sequelize');
 const { Promotion } = require('../models');
+const { codepageByLanguageId } = require('tedious/lib/collation');
 const getPromotionById = async (req, res) => {
     try {
         const { id } = req.query;
@@ -77,12 +78,22 @@ const getAllPromotion = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
-
+const getPromotionByCode = async (req, res) => {
+    try {
+        const { Code } = req.query;
+        const promotion = await Promotion.findOne({ where: { Code } });
+        res.status(200).json(promotion);
+    } catch (error) {
+        console.error(error);
+            res.status(500).json({ error: 'Internal server error' });
+    }
+};
 
 module.exports = { 
     getPromotionById, 
     createPromotion,
     deletePromotion,
     updatePromotion,
-    getAllPromotion
+    getAllPromotion,
+    getPromotionByCode
 };

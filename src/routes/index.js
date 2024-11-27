@@ -45,7 +45,7 @@ const {
     getAllPosition,
 } = require('../controllers/PositionController');
 const { createEmployee, getAllEmployee, LoginEmployee, updatePassword, deleteEmployeeById, LockEmployee, UnLockEmployee, updateEmployee, resetPassword } = require('../controllers/EmployeeController');
-const { getPromotionById, createPromotion, deletePromotion, updatePromotion, getAllPromotion } = require('../controllers/PromotionController');
+const { getPromotionById, createPromotion, deletePromotion, updatePromotion, getAllPromotion, getPromotionByCode } = require('../controllers/PromotionController');
 const { getAllMethodPayment, updateStatusMethodPayment } = require('../controllers/PaymentMethodController');
 const { getAllOrders, getOrderById, getNewOrders, updateOrderStatus, getShipingOrders, getPackingOrders, getCompleteOrders, getOrdersByIdCustomer, getOrderCustomerDetail } = require('../controllers/OrderController');
 const { revenueByDate, revenueByWeek, revenueByMonth, revenueByYear, customRangeRevenue } = require('../controllers/RevenueController');
@@ -94,6 +94,7 @@ router.post('/create-promotion', createPromotion);
 router.delete('/delete-promotion', deletePromotion);
 router.put('/update-promotion', updatePromotion);
 router.get('/get-all-promotion', getAllPromotion);
+router.get('/get-promotion-by-code',getPromotionByCode);
 //router customer
 router.post('/register', registerCustomerWithEmailAndPassword);
 router.get('/check-email', checkEmail);
