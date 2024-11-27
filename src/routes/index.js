@@ -51,6 +51,7 @@ const { getAllOrders, getOrderById, getNewOrders, updateOrderStatus, getShipingO
 const { revenueByDate, revenueByWeek, revenueByMonth, revenueByYear, customRangeRevenue } = require('../controllers/RevenueController');
 const { getAllSupplier, addSupplier, updateSupplier, updateSupplierStatus, getSupplierById, getSupplier } = require('../controllers/SupplierController');
 const { getDeliveryReceipts, createDeliveryReceipt, getDeliveryReceiptDetails, updateDeliveryReceipt, updateStatusDeliveryreceipt } = require('../controllers/DeliveryreceiptController');
+const { getAddressByIdCustomer, deleteAddress, updateAddress, addAddress } = require('../controllers/AdressUserController');
 
 
 const router = express.Router();
@@ -111,6 +112,14 @@ router.post('/create-country-of-origin', CreateCountryOfOrigin);
 router.get('/get-orders-by-id-customer',getOrdersByIdCustomer);
 router.get('/get-order-customer-detail',getOrderCustomerDetail);
 router.post('/re-view',reView);
+
+
+//router shippingAddress
+router.get('/get-address-by-id-customer',getAddressByIdCustomer);
+router.post('/create-address',addAddress);
+router.put('/update-address',updateAddress);
+router.delete('/delete-address',deleteAddress);
+
 //#region Admin
 //router Admin
 
