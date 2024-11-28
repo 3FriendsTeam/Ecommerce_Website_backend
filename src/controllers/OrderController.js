@@ -207,7 +207,51 @@ const getOrderById = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
-
+[id]
+      ,[OrderDate]
+      ,[OrderStatus]
+      ,[TotalAmount]
+      ,[PaymentMethodID]
+      ,[EmployeeID]
+      ,[PromotionID]
+      ,[CustomerID]
+      ,[PaymentStatus]
+      ,[PaymentDate]
+      ,[AddressID]
+      ,[createdAt]
+      ,[updatedAt]
+const createOrder = async (req, res) => {
+    try {
+        const { OrderDate, OrderStatus, TotalAmount, PaymentMethodID, PromotionID, CustomerID, PaymentStatus, PaymentDate, AddressID, ListProduct } = req.body;
+        const order = await OrderCustomer.create({
+            OrderDate: Sequelize.NOW,
+            OrderStatus: OrderStatus,
+            TotalAmount: TotalAmount,
+            PaymentMethodID: PaymentMethodID,
+            PromotionID: PromotionID,
+            CustomerID: CustomerID,
+            PaymentStatus:false,
+            PaymentDate:Sequelize.NOW,
+            AddressID: AddressID,
+        });
+        if (ListProduct) {
+            await Promise.all(
+                ListProduct.map(async (product) => {
+                    await OrderProductDetail.create({
+                        OrderID: order.id,
+                        ProductID: product.ProductID,
+                        UnitPrice: product.UnitPrice,
+                        Quantity: product.Quantity,
+                        Notes: product.Notes,
+                    });
+                })
+            );
+        }
+        res.status(201).json(order);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
 
 
 
@@ -317,5 +361,6 @@ module.exports = {
     getPackingOrders,
     getCompleteOrders,
     getOrdersByIdCustomer,
-    getOrderCustomerDetail
+    getOrderCustomerDetail,
+    createOrder
  };

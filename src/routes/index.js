@@ -47,7 +47,7 @@ const {
 const { createEmployee, getAllEmployee, LoginEmployee, updatePassword, deleteEmployeeById, LockEmployee, UnLockEmployee, updateEmployee, resetPassword } = require('../controllers/EmployeeController');
 const { getPromotionById, createPromotion, deletePromotion, updatePromotion, getAllPromotion, getPromotionByCode } = require('../controllers/PromotionController');
 const { getAllMethodPayment, updateStatusMethodPayment } = require('../controllers/PaymentMethodController');
-const { getAllOrders, getOrderById, getNewOrders, updateOrderStatus, getShipingOrders, getPackingOrders, getCompleteOrders, getOrdersByIdCustomer, getOrderCustomerDetail } = require('../controllers/OrderController');
+const { getAllOrders, getOrderById, getNewOrders, updateOrderStatus, getShipingOrders, getPackingOrders, getCompleteOrders, getOrdersByIdCustomer, getOrderCustomerDetail, createOrder } = require('../controllers/OrderController');
 const { revenueByDate, revenueByWeek, revenueByMonth, revenueByYear, customRangeRevenue } = require('../controllers/RevenueController');
 const { getAllSupplier, addSupplier, updateSupplier, updateSupplierStatus, getSupplierById, getSupplier } = require('../controllers/SupplierController');
 const { getDeliveryReceipts, createDeliveryReceipt, getDeliveryReceiptDetails, updateDeliveryReceipt, updateStatusDeliveryreceipt } = require('../controllers/DeliveryreceiptController');
@@ -112,6 +112,7 @@ router.post('/create-country-of-origin', CreateCountryOfOrigin);
 router.get('/get-orders-by-id-customer',getOrdersByIdCustomer);
 router.get('/get-order-customer-detail',getOrderCustomerDetail);
 router.post('/re-view',reView);
+router.post('/create-order',createOrder);
 
 
 //router shippingAddress
