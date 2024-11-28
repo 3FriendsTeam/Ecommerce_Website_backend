@@ -207,33 +207,21 @@ const getOrderById = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
-[id]
-      ,[OrderDate]
-      ,[OrderStatus]
-      ,[TotalAmount]
-      ,[PaymentMethodID]
-      ,[EmployeeID]
-      ,[PromotionID]
-      ,[CustomerID]
-      ,[PaymentStatus]
-      ,[PaymentDate]
-      ,[AddressID]
-      ,[createdAt]
-      ,[updatedAt]
 const createOrder = async (req, res) => {
+    const transaction = await sequelize.transaction();
     try {
         const { OrderDate, OrderStatus, TotalAmount, PaymentMethodID, PromotionID, CustomerID, PaymentStatus, PaymentDate, AddressID, ListProduct } = req.body;
         const order = await OrderCustomer.create({
             OrderDate: Sequelize.NOW,
-            OrderStatus: OrderStatus,
-            TotalAmount: TotalAmount,
-            PaymentMethodID: PaymentMethodID,
-            PromotionID: PromotionID,
-            CustomerID: CustomerID,
-            PaymentStatus:false,
-            PaymentDate:Sequelize.NOW,
-            AddressID: AddressID,
-        });
+            OrderStatus,
+            TotalAmount,
+            PaymentMethodID,
+            PromotionID,
+            CustomerID,
+            PaymentStatus,
+            PaymentDate: Sequelize.NOW,
+            AddressID,
+        }, { transaction });
         if (ListProduct) {
             await Promise.all(
                 ListProduct.map(async (product) => {
@@ -243,12 +231,14 @@ const createOrder = async (req, res) => {
                         UnitPrice: product.UnitPrice,
                         Quantity: product.Quantity,
                         Notes: product.Notes,
-                    });
+                    }, { transaction });
                 })
             );
         }
+        await transaction.commit();
         res.status(201).json(order);
     } catch (error) {
+        await transaction.rollback();
         res.status(500).json({ error: error.message });
     }
 };
