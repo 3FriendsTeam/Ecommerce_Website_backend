@@ -1,4 +1,4 @@
-const { OrderCustomer, OrderProductDetail, Product,ShippingAddress } = require('../models');
+const { OrderCustomer, OrderProductDetail, Product,ShippingAddress, sequelize } = require('../models');
 const admin = require('../config/firebaseAdmin.js');
 const { Op, Sequelize } = require("sequelize"); 
 
@@ -208,21 +208,26 @@ const getOrderById = async (req, res) => {
     }
 };
 const createOrder = async (req, res) => {
-    const transaction = await sequelize.transaction();
+    let transaction; // Khai báo biến giao dịch
     try {
-        const { OrderDate, OrderStatus, TotalAmount, PaymentMethodID, PromotionID, CustomerID, PaymentStatus, PaymentDate, AddressID, ListProduct } = req.body;
+        transaction = await sequelize.transaction(); // Khởi tạo giao dịch
+        const {OrderStatus, TotalAmount, PaymentMethodID, PromotionID, CustomerID, PaymentStatus, AddressID, ListProduct } = req.body;
+
+        // Tạo đơn hàng trong bảng OrderCustomer
         const order = await OrderCustomer.create({
-            OrderDate: Sequelize.NOW,
+            OrderDate: new Date(),
             OrderStatus,
             TotalAmount,
             PaymentMethodID,
             PromotionID,
             CustomerID,
             PaymentStatus,
-            PaymentDate: Sequelize.NOW,
+            PaymentDate: new Date(),
             AddressID,
-        }, { transaction });
-        if (ListProduct) {
+        }, { transaction }); // Gắn giao dịch vào lệnh tạo đơn hàng
+
+        // Nếu có sản phẩm, tạo chi tiết đơn hàng trong bảng OrderProductDetail
+        if (ListProduct && ListProduct.length > 0) {
             await Promise.all(
                 ListProduct.map(async (product) => {
                     await OrderProductDetail.create({
@@ -231,17 +236,28 @@ const createOrder = async (req, res) => {
                         UnitPrice: product.UnitPrice,
                         Quantity: product.Quantity,
                         Notes: product.Notes,
-                    }, { transaction });
+                    }, { transaction }); // Gắn giao dịch vào lệnh tạo chi tiết sản phẩm
                 })
             );
         }
+
+        // Nếu không có lỗi, commit giao dịch
         await transaction.commit();
-        res.status(201).json(order);
+        res.status(201).json(order); // Trả về đơn hàng vừa tạo
     } catch (error) {
-        await transaction.rollback();
-        res.status(500).json({ error: error.message });
+        if (transaction) {
+            try {
+                await transaction.rollback(); // Rollback giao dịch nếu có lỗi
+            } catch (rollbackError) {
+                console.error("Rollback failed: ", rollbackError.message);
+            }
+        }
+        console.error("Error creating order: ", error.message); // Ghi lỗi vào console để dễ dàng debug
+        res.status(500).json({ error: error.message }); // Trả về lỗi
     }
 };
+
+
 
 
 
