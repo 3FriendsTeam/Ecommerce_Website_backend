@@ -209,21 +209,24 @@ const getOrderById = async (req, res) => {
 };
 const createOrder = async (req, res) => {
     let transaction; // Khai báo biến giao dịch
+    const token = req.headers.authorization?.split(" ")[1];
     try {
+        const decodedToken = await admin.auth().verifyIdToken(token);
+        const uid = decodedToken.uid;
         transaction = await sequelize.transaction(); // Khởi tạo giao dịch
-        const {OrderStatus, TotalAmount, PaymentMethodID, PromotionID, CustomerID, PaymentStatus, AddressID, ListProduct } = req.body;
-
+        const {TotalAmount, PaymentMethodID, PromotionID, AddressID, ListProduct } = req.body;
+        console.log("danh sach :",TotalAmount, PaymentMethodID, PromotionID, AddressID, ListProduct,"keets thuc");
         // Tạo đơn hàng trong bảng OrderCustomer
         const order = await OrderCustomer.create({
             OrderDate: new Date(),
-            OrderStatus,
-            TotalAmount,
-            PaymentMethodID,
-            PromotionID,
-            CustomerID,
-            PaymentStatus,
+            OrderStatus: "Chờ xác nhận",
+            TotalAmount:TotalAmount,
+            PaymentMethodID:PaymentMethodID,
+            PromotionID:PromotionID,
+            CustomerID: uid,
+            PaymentStatus: 1,
             PaymentDate: new Date(),
-            AddressID,
+            AddressID:AddressID,
         }, { transaction }); // Gắn giao dịch vào lệnh tạo đơn hàng
 
         // Nếu có sản phẩm, tạo chi tiết đơn hàng trong bảng OrderProductDetail
@@ -232,9 +235,9 @@ const createOrder = async (req, res) => {
                 ListProduct.map(async (product) => {
                     await OrderProductDetail.create({
                         OrderID: order.id,
-                        ProductID: product.ProductID,
-                        UnitPrice: product.UnitPrice,
-                        Quantity: product.Quantity,
+                        ProductID: product.id,
+                        UnitPrice: product.price,
+                        Quantity: product.quantity,
                         Notes: product.Notes,
                     }, { transaction }); // Gắn giao dịch vào lệnh tạo chi tiết sản phẩm
                 })
