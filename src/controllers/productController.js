@@ -187,8 +187,8 @@ const updateProduct = async (req, res) => {
   const transaction = await sequelize.transaction();
 
   try {
-    const { id } = req.query; // Get product ID from query parameters
-    const { updatedProduct, nameEmployee } = req.body; // Get updated product data and employee name from request body
+    const { id } = req.query; 
+    const { updatedProduct, nameEmployee } = req.body;
     const {
       ProductName,
       ListedPrice,
@@ -200,22 +200,20 @@ const updateProduct = async (req, res) => {
       ManufacturerID,
       CountryID,
       Colors,
-      ProductAttributeDetails, 
+      ProductAttributeDetails,
       Images,
-      specifications
     } = updatedProduct;
 
-    // Validate product ID
+    console.log(updatedProduct);
     if (!id) {
       return res.status(400).json({ message: "Product ID is required." });
     }
 
-    // Find the product in the database
     const product = await Product.findByPk(id, { transaction });
     if (!product) {
       return res.status(404).json({ message: "Product not found." });
     }
-    // Update main product details
+
     await product.update(
       {
         ProductName,
@@ -232,98 +230,62 @@ const updateProduct = async (req, res) => {
       { transaction }
     );
 
-    // Update Colors
     if (Colors && Array.isArray(Colors)) {
-      // Delete old colors
       await Color.destroy({ where: { ProductID: id }, transaction });
-
-      // Prepare new color data
       const colorData = Colors.map((color) => ({
         ProductID: id,
         ColorName: color.ColorName,
       }));
-
-      // Bulk create new colors
       await Color.bulkCreate(colorData, { transaction });
     }
+    
 
-    // Update ProductAttributeDetails
+    if (Images && Array.isArray(Images)) {
+      await Image.destroy({ where: { ProductID: id }, transaction });
+      for (const img of Images) {
+        await Image.create(
+          {
+            ProductID: id,
+            ThuTu: img.ThuTu,
+            FilePath: img.FilePath,
+          },
+          { transaction })
+      }
+    }
+
     if (ProductAttributeDetails && Array.isArray(ProductAttributeDetails)) {
-      // Delete old attribute details
       await ProductAttributeDetail.destroy({ where: { ProductID: id }, transaction });
-
-      // Ensure attributes exist or create them
-      for (const attrDetail of ProductAttributeDetails) {
-        let attribute = await ProductAttribute.findOne({
-          where: { AttributeName: attrDetail.AttributeName },
+      for (const spec of ProductAttributeDetails) {
+        const [attribute] = await ProductAttribute.findOrCreate({
+          where: { AttributeName: spec.AttributeName },
+          defaults: { AttributeName: spec.AttributeName },
           transaction,
         });
-
-        if (!attribute) {
-          attribute = await ProductAttribute.create(
-            { AttributeName: attrDetail.AttributeName },
-            { transaction }
-          );
-        }
-
-        // Create new attribute detail
         await ProductAttributeDetail.create(
           {
             ProductID: id,
             AttributeID: attribute.id,
-            AttributeValue: attrDetail.AttributeValue,
+            AttributeValue: spec.AttributeValue,
           },
           { transaction }
         );
       }
     }
-if (specifications && specifications.length > 0) {
-      for (const spec of specifications) {
-        // Tìm hoặc tạo mới ProductAttribute
-        const [attribute] = await ProductAttribute.findOrCreate({
-          where: { AttributeName: spec.name },
-          defaults: { AttributeName: spec.name },
-          transaction,
-        });
-  
-          // Tạo mới ProductAttributeDetail
-        await ProductAttributeDetail.create(
-          {
-            ProductID: productID,
-            AttributeID: attribute.id,
-            AttributeValue: spec.value,
-          },
-          { transaction }
-        );
-      }
-    }
-    // Update Images
-    if (Images && Array.isArray(Images)) {
-      // Delete old images
-      await Image.destroy({ where: { ProductID: id }, transaction });
 
-      // Prepare new image data
-      const imageData = Images.map((image, index) => ({
-        ProductID: id,
-        FilePath: image.FilePath,
-        ThuTu: image.ThuTu || index + 1,
-      }));
-
-      // Bulk create new images
-      await Image.bulkCreate(imageData, { transaction });
-    }
-
-    // Commit the transaction
     await transaction.commit();
 
-    res.status(200).json({ message: "Product updated successfully." });
+    // Trả về phản hồi thành công
+    return res.status(200).json({ message: "Product updated successfully." });
+
   } catch (error) {
-    // Rollback the transaction in case of error
+    // Nếu có lỗi, rollback giao dịch
     await transaction.rollback();
-    console.error("Error updating product:", error);
-    res.status(500).json({ message: "An error occurred. Please try again later." });
+    console.error(error);
+    return res.status(500).json({ message: "An error occurred while updating the product.", error: error.message });
   }
 };
+
+
 
 
 const getLowStockProucts = async (req, res) => {
