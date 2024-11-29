@@ -199,9 +199,10 @@ const updateProduct = async (req, res) => {
       WarrantyPolicyID,
       ManufacturerID,
       CountryID,
-      Colors, // Array of colors
-      ProductAttributeDetails, // Array of attribute details
-      Images, // Array of images
+      Colors,
+      ProductAttributeDetails, 
+      Images,
+      specifications
     } = updatedProduct;
 
     // Validate product ID
@@ -214,7 +215,6 @@ const updateProduct = async (req, res) => {
     if (!product) {
       return res.status(404).json({ message: "Product not found." });
     }
-
     // Update main product details
     await product.update(
       {
