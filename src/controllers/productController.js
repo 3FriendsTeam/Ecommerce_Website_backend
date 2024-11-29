@@ -83,7 +83,7 @@ const createProduct = async (req, res) => {
       CountryID,
       colors,
       specifications,
-      Gallery,
+      Images,
     } = newProduct;
     const Stock = 0;
     const Status = true ;
@@ -94,14 +94,16 @@ const createProduct = async (req, res) => {
     const productID = product.id;
   
       // Lưu ảnh vào bảng Image
-    if (Gallery && Gallery.length > 0) {
-      const images = Gallery.map((imageUrl, index) => ({
-        ProductID: productID,
-        ThuTu: index + 1,
-        FilePath: imageUrl,
-      }));
-      await Image.bulkCreate(images, { transaction });
-    }
+    if (Images && Images.length > 0) {
+      for (const img of Images) {
+        await Image.create(
+          {
+            ProductID: productID,
+            ThuTu: img.ThuTu,
+            FilePath: img.FilePath,
+          },
+          { transaction })
+      }};
   
       // Lưu màu sắc vào bảng Color
    if (colors && colors.length > 0) {
@@ -111,7 +113,7 @@ const createProduct = async (req, res) => {
       }));
       await Color.bulkCreate(colorData, { transaction });
     }
-  
+
       // Lưu thông số kỹ thuật
     if (specifications && specifications.length > 0) {
       for (const spec of specifications) {
@@ -275,7 +277,26 @@ const updateProduct = async (req, res) => {
         );
       }
     }
-
+if (specifications && specifications.length > 0) {
+      for (const spec of specifications) {
+        // Tìm hoặc tạo mới ProductAttribute
+        const [attribute] = await ProductAttribute.findOrCreate({
+          where: { AttributeName: spec.name },
+          defaults: { AttributeName: spec.name },
+          transaction,
+        });
+  
+          // Tạo mới ProductAttributeDetail
+        await ProductAttributeDetail.create(
+          {
+            ProductID: productID,
+            AttributeID: attribute.id,
+            AttributeValue: spec.value,
+          },
+          { transaction }
+        );
+      }
+    }
     // Update Images
     if (Images && Array.isArray(Images)) {
       // Delete old images
