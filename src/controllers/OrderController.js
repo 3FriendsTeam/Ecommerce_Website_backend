@@ -151,8 +151,12 @@ const updateOrderStatus = async (req, res) => {
         if (!order) {
             return res.status(404).json({ error: "Order not found" });
         }
-
-        order.OrderStatus = OrderStatus;
+        if(OrderStatus === "Đã hoàn thành"){
+            order.PaymentStatus = 1;
+        }else{
+            order.OrderStatus = OrderStatus;
+        }
+        
         await order.save();
 
         res.status(200).json({message: "Order status updated successfully"});
@@ -215,7 +219,6 @@ const createOrder = async (req, res) => {
         const uid = decodedToken.uid;
         transaction = await sequelize.transaction(); // Khởi tạo giao dịch
         const {TotalAmount, PaymentMethodID, PromotionID, AddressID, ListProduct } = req.body;
-        console.log("danh sach :",TotalAmount, PaymentMethodID, PromotionID, AddressID, ListProduct,"keets thuc");
         // Tạo đơn hàng trong bảng OrderCustomer
         const order = await OrderCustomer.create({
             OrderDate: new Date(),
@@ -224,7 +227,7 @@ const createOrder = async (req, res) => {
             PaymentMethodID:PaymentMethodID,
             PromotionID:PromotionID,
             CustomerID: uid,
-            PaymentStatus: 1,
+            PaymentStatus: PaymentMethodID === 1 ? 0 : 1,
             PaymentDate: new Date(),
             AddressID:AddressID,
         }, { transaction }); // Gắn giao dịch vào lệnh tạo đơn hàng
@@ -259,10 +262,6 @@ const createOrder = async (req, res) => {
         res.status(500).json({ error: error.message }); // Trả về lỗi
     }
 };
-
-
-
-
 
 const getOrdersByIdCustomer = async (req, res) => {
     try {
