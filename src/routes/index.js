@@ -38,7 +38,8 @@ const{
     createWarrantyPolicy,
     getAllWarrantyPolicy,
     deleteWarrantyPolicy,
-    updateWarrantyPolicy
+    updateWarrantyPolicy,
+    getWarrantyPolicyById
 } = require('../controllers/WarrantyPolicy');
 
 const {
@@ -61,6 +62,7 @@ const router = express.Router();
 
 
 //router warranty
+router.get('/get-warranty-policies', getWarrantyPolicyById);
 router.get('/warranty-policies', getAllWarrantyPolicy);
 router.post('/create-warranty-policies', createWarrantyPolicy);
 router.delete('/delete-warranty-policies', deleteWarrantyPolicy);

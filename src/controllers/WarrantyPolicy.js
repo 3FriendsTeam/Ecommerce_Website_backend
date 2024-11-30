@@ -36,9 +36,19 @@ const updateWarrantyPolicy = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 }
+const getWarrantyPolicyById = async (req, res) => {
+    try {
+        const { id } = req.query;
+        const warrantyPolicy = await WarrantyPolicy.findByPk(id);
+        res.status(200).json(warrantyPolicy);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
 module.exports = {
     createWarrantyPolicy,
     getAllWarrantyPolicy,
     deleteWarrantyPolicy,
-    updateWarrantyPolicy
+    updateWarrantyPolicy,
+    getWarrantyPolicyById
 }
