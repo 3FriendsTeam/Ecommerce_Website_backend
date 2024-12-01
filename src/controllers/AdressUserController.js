@@ -21,18 +21,16 @@ const addAddress = async (req, res) => {
       const decodedToken = await admin.auth().verifyIdToken(token);
       const uid = decodedToken.uid;
   
-      const { RecipientName, PhoneNumber, City, District, Ward, SpecificAddress } = req.body;
+      const { RecipientName, PhoneNumber, Address, SpecificAddress } = req.body;
   
-      if (!RecipientName || !PhoneNumber || !City || !District || !Ward || !SpecificAddress) {
+      if (!RecipientName || !PhoneNumber || !Address || !SpecificAddress) {
         return res.status(400).json({ error: "Thiếu thông tin địa chỉ" });
       }
   
       const newAddress = await ShippingAddress.create({
         RecipientName: RecipientName,
         PhoneNumber: PhoneNumber,
-        City: City,
-        District:District,
-        Ward:District,
+        Address:Address,
         SpecificAddress:SpecificAddress,
         IsDeleted : false,
         CustomerID: uid
@@ -48,7 +46,7 @@ const addAddress = async (req, res) => {
 const updateAddress = async (req, res) => {
     const token = req.headers.authorization?.split(" ")[1];
   const { id } = req.query;
-  const { RecipientName, PhoneNumber, City, District, Ward, SpecificAddress } = req.body;
+  const { RecipientName, PhoneNumber, Address , SpecificAddress } = req.body;
   try {
     const decodedToken = await admin.auth().verifyIdToken(token);
     const uid = decodedToken.uid;
@@ -61,9 +59,7 @@ const updateAddress = async (req, res) => {
 
     address.RecipientName = RecipientName || address.RecipientName;
     address.PhoneNumber = PhoneNumber || address.PhoneNumber;
-    address.City = City || address.City;
-    address.District = District || address.District;
-    address.Ward = Ward || address.Ward;
+    address.Address = Address || address.Address;
     address.SpecificAddress = SpecificAddress || address.SpecificAddress;
 
     await address.save();

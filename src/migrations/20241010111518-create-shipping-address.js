@@ -17,15 +17,7 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
-      City: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      District: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      Ward: {
+      Address: {
         type: Sequelize.STRING,
         allowNull: false
       },

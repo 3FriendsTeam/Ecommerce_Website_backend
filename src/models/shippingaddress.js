@@ -21,9 +21,7 @@ module.exports = (sequelize, DataTypes) => {
   ShippingAddress.init({
     RecipientName: DataTypes.STRING,
     PhoneNumber: DataTypes.STRING,
-    City: DataTypes.STRING,
-    District: DataTypes.STRING,
-    Ward: DataTypes.STRING,
+    Address: DataTypes.STRING,
     SpecificAddress: DataTypes.STRING,
     CustomerID: DataTypes.STRING,
     IsDeleted: DataTypes.BOOLEAN,
