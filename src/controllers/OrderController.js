@@ -313,48 +313,48 @@ const getOrdersByIdCustomer = async (req, res) => {
 
 
 const getOrderCustomerDetail = async(req, res)=>
-{
-    try {
-        const id = req.query.id;
-        const order =  await OrderCustomer.findByPk(id, {
-            attributes: [
-                "id", 
-                "OrderDate", 
-                "OrderStatus", 
-                "TotalAmount", 
-                "PaymentMethodID", 
-                "PaymentStatus", 
-                "PaymentDate", 
-                "CustomerID",
-            ],
-            include: [
-                {
-                    model: OrderProductDetail,
-                    attributes: ["OrderID", "ProductID", "UnitPrice", "Quantity", "Notes"],
-                    include: [
-                        {
-                            model: Product,
-                            attributes: [
-                                "ProductName",
-                                "PromotionalPrice",
-                                "RepresentativeImage",
-                            ],
-                        },
-                    ],
-                },
-                {
-                    model: ShippingAddress,
-                    attributes:["RecipientName", "PhoneNumber", "City", "District", "Ward", "SpecificAddress"],
+    {
+        try {
+            const id = req.query.id;
+            const order =  await OrderCustomer.findByPk(id, {
+                attributes: [
+                    "id", 
+                    "OrderDate", 
+                    "OrderStatus", 
+                    "TotalAmount", 
+                    "PaymentMethodID", 
+                    "PaymentStatus", 
+                    "PaymentDate", 
+                    "CustomerID",
+                ],
+                include: [
+                    {
+                        model: OrderProductDetail,
+                        attributes: ["OrderID", "ProductID", "UnitPrice", "Quantity", "Notes"],
+                        include: [
+                            {
+                                model: Product,
+                                attributes: [
+                                    "ProductName",
+                                    "PromotionalPrice",
+                                    "RepresentativeImage",
+                                ],
+                            },
+                        ],
+                    },
+                    {
+                        model: ShippingAddress,
+                        attributes:["RecipientName", "PhoneNumber", "Address", "SpecificAddress"],
+                    }
+                ],});
+                if (!order) {
+                    return res.status(404).json({ error: "Order not found" });
                 }
-            ],});
-            if (!order) {
-                return res.status(404).json({ error: "Order not found" });
+                res.status(200).json(order);
+            }catch(error){
+                return res.status(404).json({ message: 'Order not found 1' , error:error.message});
             }
-            res.status(200).json(order);
-        }catch(error){
-            return res.status(404).json({ message: 'Order not found 1' , error:error.message});
-        }
-};
+    };
                     
 
 module.exports = { 

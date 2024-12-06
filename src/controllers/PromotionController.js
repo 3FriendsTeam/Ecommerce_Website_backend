@@ -14,7 +14,7 @@ const getPromotionById = async (req, res) => {
 const createPromotion = async (req, res) => {
     try {
         const { PromotionName, DiscountValue, Quantity, MinValue, MaxDiscount, Code,StartDate,EndDate,CreatedBy } = req.body;
-        const promotion = await Promotion.create({ PromotionName: PromotionName, DiscountValue: DiscountValue, Quantity : Quantity, MinValue: MinValue, MaxDiscount: MaxDiscount, Code,StartDate:StartDate,EndDate:EndDate,CreatedBy:CreatedBy });
+        await Promotion.create({ PromotionName: PromotionName, DiscountValue: DiscountValue, Quantity : Quantity, MinValue: MinValue, MaxDiscount: MaxDiscount, Code,StartDate:StartDate,EndDate:EndDate,CreatedBy:CreatedBy });
         res.status(200).json({message: 'Promotion created successfully'});
     } catch (error) {
         console.error(error);
