@@ -89,7 +89,7 @@ const createProduct = async (req, res) => {
     const Status = true ;
     console.log(newProduct , nameEmployee);
     // Tạo sản phẩm mới
-    const product = await Product.create({ProductName: ProductName, ListedPrice: ListedPrice, RepresentativeImage: RepresentativeImage, Stock: Stock, Description: Description, PromotionalPrice: PromotionalPrice, Status: Status, CategoryID: CategoryID, WarrantyPolicyID: WarrantyPolicyID, ManufacturerID: ManufacturerID, CountryID: CountryID, CreatedBy: nameEmployee}, { transaction });
+    const product = await Product.create({ProductName: ProductName, ListedPrice: ListedPrice, RepresentativeImage: RepresentativeImage, Stock: Stock, Description: Description, PromotionalPrice: PromotionalPrice, Status: Status, CategoryID: CategoryID, WarrantyPolicyID: WarrantyPolicyID, ManufacturerID: ManufacturerID, CountryID: CountryID, CreatedBy: nameEmployee}, { transaction, returning: false });
   
     const productID = product.id;
   
@@ -102,7 +102,7 @@ const createProduct = async (req, res) => {
             ThuTu: img.ThuTu,
             FilePath: img.FilePath,
           },
-          { transaction })
+          { transaction, returning: false})
       }};
   
       // Lưu màu sắc vào bảng Color
@@ -111,7 +111,7 @@ const createProduct = async (req, res) => {
       ProductID: productID,
         ColorName: colorName,
       }));
-      await Color.bulkCreate(colorData, { transaction });
+      await Color.bulkCreate(colorData, { transaction, returning: false });
     }
 
       // Lưu thông số kỹ thuật
@@ -121,7 +121,7 @@ const createProduct = async (req, res) => {
         const [attribute] = await ProductAttribute.findOrCreate({
           where: { AttributeName: spec.name },
           defaults: { AttributeName: spec.name },
-          transaction,
+          transaction, returning: false,
         });
   
           // Tạo mới ProductAttributeDetail
@@ -131,7 +131,7 @@ const createProduct = async (req, res) => {
             AttributeID: attribute.id,
             AttributeValue: spec.value,
           },
-          { transaction }
+          { transaction, returning: false }
         );
       }
     }
@@ -206,11 +206,13 @@ const updateProduct = async (req, res) => {
 
     console.log(updatedProduct);
     if (!id) {
+      await transaction.rollback();
       return res.status(400).json({ message: "Product ID is required." });
     }
 
     const product = await Product.findByPk(id, { transaction });
     if (!product) {
+      await transaction.rollback();
       return res.status(404).json({ message: "Product not found." });
     }
 
@@ -227,49 +229,53 @@ const updateProduct = async (req, res) => {
         RepresentativeImage,
         UpdatedBy: nameEmployee,
       },
-      { transaction }
+      { 
+        transaction,
+        returning: false // Giữ tùy chọn này nếu cần, nhưng đảm bảo rằng trigger không gây xung đột
+      }
     );
 
+    // Cập nhật màu sắc nếu có
     if (Colors && Array.isArray(Colors)) {
       await Color.destroy({ where: { ProductID: id }, transaction });
       const colorData = Colors.map((color) => ({
         ProductID: id,
         ColorName: color.ColorName,
       }));
-      await Color.bulkCreate(colorData, { transaction });
+      await Color.bulkCreate(colorData, { transaction, returning: false });
     }
-    
 
+    // Cập nhật hình ảnh nếu có
     if (Images && Array.isArray(Images)) {
       await Image.destroy({ where: { ProductID: id }, transaction });
-      for (const img of Images) {
-        await Image.create(
-          {
-            ProductID: id,
-            ThuTu: img.ThuTu,
-            FilePath: img.FilePath,
-          },
-          { transaction })
-      }
+      // Sử dụng bulkCreate thay vì loop để tối ưu hóa
+      const imageData = Images.map((img) => ({
+        ProductID: id,
+        ThuTu: img.ThuTu,
+        FilePath: img.FilePath,
+      }));
+      await Image.bulkCreate(imageData, { transaction, returning: false });
     }
 
+    // Cập nhật chi tiết thuộc tính sản phẩm nếu có
     if (ProductAttributeDetails && Array.isArray(ProductAttributeDetails)) {
       await ProductAttributeDetail.destroy({ where: { ProductID: id }, transaction });
-      for (const spec of ProductAttributeDetails) {
+      
+      // Chuẩn bị dữ liệu để bulk create
+      const attributeDetailsData = await Promise.all(ProductAttributeDetails.map(async (spec) => {
         const [attribute] = await ProductAttribute.findOrCreate({
           where: { AttributeName: spec.AttributeName },
           defaults: { AttributeName: spec.AttributeName },
           transaction,
         });
-        await ProductAttributeDetail.create(
-          {
-            ProductID: id,
-            AttributeID: attribute.id,
-            AttributeValue: spec.AttributeValue,
-          },
-          { transaction }
-        );
-      }
+        return {
+          ProductID: id,
+          AttributeID: attribute.id,
+          AttributeValue: spec.AttributeValue,
+        };
+      }));
+
+      await ProductAttributeDetail.bulkCreate(attributeDetailsData, { transaction, returning: false });
     }
 
     await transaction.commit();
@@ -279,11 +285,18 @@ const updateProduct = async (req, res) => {
 
   } catch (error) {
     // Nếu có lỗi, rollback giao dịch
-    await transaction.rollback();
-    console.error(error);
+    if (transaction) {
+      try {
+        await transaction.rollback();
+      } catch (rollbackError) {
+        console.error("Rollback failed: ", rollbackError.message);
+      }
+    }
+    console.error("Error updating product: ", error);
     return res.status(500).json({ message: "An error occurred while updating the product.", error: error.message });
   }
 };
+
 
 
 
@@ -302,30 +315,46 @@ const getLowStockProucts = async (req, res) => {
   }
 }
 
-const reView = async(req,res)=>
-{
+const reView = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
+    if (!token) {
+      return res.status(401).json({ message: 'Unauthorized: Token không được cung cấp.' });
+    }
+
     const decodedToken = await admin.auth().verifyIdToken(token);
     const uid = decodedToken.uid;
-    console.log(uid);
+
     if (!uid) {
-      return res.status(400).json({ message: 'Customer ID is required.' });
+      return res.status(400).json({ message: 'Customer ID không hợp lệ.' });
     }
-    const {id} = req.query;
-    const {RatingLevel,ReviewContent, ReviewDate} = req.body;
-    const review = await Review.create({
-      RatingLevel: RatingLevel,
-      ReviewContent: ReviewContent,
-      ReviewDate: ReviewDate,
+
+    const { id } = req.params;
+    const { RatingLevel, ReviewContent, ReviewDate } = req.body;
+
+    if (!RatingLevel || !ReviewContent) {
+      return res.status(400).json({ message: 'RatingLevel và ReviewContent là bắt buộc.' });
+    }
+
+    const product = await Product.findByPk(id);
+    if (!product) {
+      return res.status(404).json({ message: 'Sản phẩm không tồn tại.' });
+    }
+    await Review.create({
+      RatingLevel,
+      ReviewContent,
+      ReviewDate: ReviewDate || new Date(),
       ProductID: id,
       CustomerID: uid
     });
-    res.status(200).json({message: 'Cảm ơn bạn đã đánh giá sản phẩm của chúng tôi'});
+
+    res.status(201).json({ message: 'Cảm ơn bạn đã đánh giá sản phẩm của chúng tôi.' });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Lỗi khi tạo đánh giá:', error);
+    res.status(500).json({ message: 'Lỗi khi tạo đánh giá.', error: error.message });
   }
-}
+};
+
 
 const getProductsByManufacturer = async (req, res) => {
   try {

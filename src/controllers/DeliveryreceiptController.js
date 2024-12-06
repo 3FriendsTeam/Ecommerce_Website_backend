@@ -1,26 +1,76 @@
 const { Sequelize } = require("sequelize");
 const { DeliveryReceipt,
     DeliveryReceiptDetail,
-    Product
+    Product,
+    sequelize
  } = require("../models");
 
-const createDeliveryReceipt = async (req, res) => {
-    const { DeliveryDate, Notes, SupplierID, EmployeeID,Status = "Chờ xử lý", Products } = req.body;
+  const createDeliveryReceipt = async (req, res) => {
+    const transaction = await sequelize.transaction(); 
     try {
-      const receipt = await DeliveryReceipt.create({ DeliveryDate: DeliveryDate, Notes : Notes, SupplierID: SupplierID, EmployeeID: EmployeeID,Status: Status, Details: Products });
-      if (Products && Products.length > 0) {
-        const receiptDetails = Products.map((detail) => ({
-          ...detail,
-          ReceiptID: receipt.id,
-          TotalPrice: detail.Quantity * parseFloat(detail.UnitPrice),
-        }));
-        await DeliveryReceiptDetail.bulkCreate(receiptDetails);
+      const { DeliveryDate, Notes, SupplierID, EmployeeID, Status = "Chờ xử lý", Products } = req.body;
+  
+      // Xác thực dữ liệu đầu vào
+      if (!DeliveryDate || !SupplierID || !EmployeeID) {
+        await transaction.rollback();
+        return res.status(400).json({ message: 'Thiếu các trường bắt buộc: DeliveryDate, SupplierID, EmployeeID.' });
       }
+
+      const receipt = await DeliveryReceipt.create(
+        { 
+          DeliveryDate, 
+          Notes, 
+          SupplierID, 
+          EmployeeID, 
+          Status 
+        }, 
+        { 
+          transaction
+        }
+      );
+  
+      // Nếu có Products, tạo DeliveryReceiptDetail
+      if (Products && Array.isArray(Products) && Products.length > 0) {
+        // Chuẩn bị dữ liệu cho DeliveryReceiptDetail
+        const receiptDetails = Products.map((detail) => {
+          // Xác thực từng chi tiết sản phẩm
+          if (!detail.ProductID || !detail.Quantity || !detail.UnitPrice) {
+            throw new Error('Thiếu các trường bắt buộc trong Products: ProductID, Quantity, UnitPrice.');
+          }
+  
+          return {
+            ProductID: detail.ProductID,
+            Quantity: detail.Quantity,
+            UnitPrice: parseFloat(detail.UnitPrice),
+            TotalPrice: detail.Quantity * parseFloat(detail.UnitPrice),
+            ReceiptID: receipt.id, // Gán ReceiptID từ Receipt vừa tạo
+            // Thêm các trường khác nếu có
+          };
+        });
+  
+        // Tạo các chi tiết đơn hàng bằng bulkCreate với `returning: false`
+        await DeliveryReceiptDetail.bulkCreate(receiptDetails, { transaction, returning: false });
+      }
+  
+      // Commit transaction nếu tất cả đều thành công
+      await transaction.commit();
+  
+      // Trả về phản hồi thành công
       res.status(201).json({ message: 'Delivery receipt created successfully!', receipt });
     } catch (error) {
+      // Rollback transaction nếu có lỗi
+      if (transaction) {
+        try {
+          await transaction.rollback();
+        } catch (rollbackError) {
+          console.error("Rollback failed: ", rollbackError.message);
+        }
+      }
+      console.error('Error creating delivery receipt:', error);
       res.status(500).json({ message: 'Error creating delivery receipt', error: error.message });
     }
   };
+  
 
   const getDeliveryReceipts = async (req, res) => {
     try {

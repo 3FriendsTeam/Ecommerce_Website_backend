@@ -234,17 +234,14 @@ const createOrder = async (req, res) => {
 
         // Nếu có sản phẩm, tạo chi tiết đơn hàng trong bảng OrderProductDetail
         if (ListProduct && ListProduct.length > 0) {
-            await Promise.all(
-                ListProduct.map(async (product) => {
-                    await OrderProductDetail.create({
-                        OrderID: order.id,
-                        ProductID: product.id,
-                        UnitPrice: product.price,
-                        Quantity: product.quantity,
-                        Notes: product.Notes,
-                    }, { transaction }); // Gắn giao dịch vào lệnh tạo chi tiết sản phẩm
-                })
-            );
+            const orderProductDetails = ListProduct.map(product => ({
+                OrderID: order.id,
+                ProductID: product.id,
+                UnitPrice: product.price,
+                Quantity: product.quantity,
+                Notes: product.Notes,
+            }));
+            await OrderProductDetail.bulkCreate(orderProductDetails, { transaction, returning: false }); 
         }
 
         // Nếu không có lỗi, commit giao dịch
