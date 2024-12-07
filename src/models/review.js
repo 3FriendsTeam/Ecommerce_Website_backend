@@ -22,6 +22,7 @@ module.exports = (sequelize, DataTypes) => {
     ReviewContent: DataTypes.STRING,
     RatingLevel: DataTypes.INTEGER,
     ReviewDate: DataTypes.DATE,
+    Bought: DataTypes.BOOLEAN,
     ProductID: DataTypes.INTEGER,
     CustomerID: DataTypes.STRING
   }, {

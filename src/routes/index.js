@@ -11,6 +11,7 @@ const {
     updateProduct,
     reView,
     getProductsByManufacturer,
+    getStatusBoughtProduct,
   } = require('../controllers/productController');
 const { 
     getCategories, 
@@ -114,6 +115,7 @@ router.post('/create-country-of-origin', CreateCountryOfOrigin);
 router.get('/get-orders-by-id-customer',getOrdersByIdCustomer);
 router.get('/get-order-customer-detail',getOrderCustomerDetail);
 router.post('/re-view',reView);
+router.get('/get-status-bought-product',getStatusBoughtProduct);
 router.post('/create-order',createOrder);
 
 

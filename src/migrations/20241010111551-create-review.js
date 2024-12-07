@@ -25,6 +25,10 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: false
       },
+      Bought: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false
+      },
       ProductID: {
         type: Sequelize.INTEGER,
         allowNull: false,

@@ -1,7 +1,6 @@
 const { Op } = require('sequelize');
-const { Product, Category, WarrantyPolicy, CountryOfOrigin, Manufacturer, ProductAttributeDetail,ProductAttribute, Image, Color, Customer, Review, sequelize } = require('../models');
+const { Product, Category, WarrantyPolicy, CountryOfOrigin, Manufacturer, ProductAttributeDetail,OrderCustomer,ProductAttribute, Image, Color, Customer, Review,OrderProductDetail, sequelize } = require('../models');
 const admin = require('../config/firebaseAdmin.js');
-
 const getProductsByIdCategory = async (req, res) => {
   try {
     const { id } = req.query;
@@ -315,46 +314,86 @@ const getLowStockProucts = async (req, res) => {
   }
 }
 
+
 const reView = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
-    if (!token) {
-      return res.status(401).json({ message: 'Unauthorized: Token không được cung cấp.' });
-    }
-
+    // Xác thực token
+    console.log(token);
     const decodedToken = await admin.auth().verifyIdToken(token);
     const uid = decodedToken.uid;
 
-    if (!uid) {
-      return res.status(400).json({ message: 'Customer ID không hợp lệ.' });
+    // Lấy ID sản phẩm từ query
+    const { id } = req.query;
+    if (!id) {
+      return res.status(400).json({ message: 'ID sản phẩm không được cung cấp.' });
     }
 
-    const { id } = req.params;
-    const { RatingLevel, ReviewContent, ReviewDate } = req.body;
-
-    if (!RatingLevel || !ReviewContent) {
-      return res.status(400).json({ message: 'RatingLevel và ReviewContent là bắt buộc.' });
+    const { RatingLevel, ReviewContent, ReviewDate, Bought } = req.body;
+    console.log(uid,id,RatingLevel, ReviewContent, ReviewDate, Bought);
+    if (RatingLevel === undefined || RatingLevel === null) {
+      return res.status(400).json({ message: 'RatingLevel là bắt buộc.' });
+    }
+    if (typeof RatingLevel !== 'number' || RatingLevel < 1 || RatingLevel > 5) {
+      return res.status(400).json({ message: 'RatingLevel phải là số từ 1 đến 5.' });
     }
 
     const product = await Product.findByPk(id);
     if (!product) {
       return res.status(404).json({ message: 'Sản phẩm không tồn tại.' });
     }
-    await Review.create({
-      RatingLevel,
-      ReviewContent,
-      ReviewDate: ReviewDate || new Date(),
-      ProductID: id,
-      CustomerID: uid
-    });
+    try {
+      const res = await Review.create({
+        RatingLevel,
+        ReviewContent,
+        ReviewDate: ReviewDate || new Date(),
+        ProductID: id,
+        Bought: Bought,
+        CustomerID: uid
+      });
+      console.log(res);
+    } catch (createError) {
+      console.error('Lỗi khi tạo đánh giá:', createError.message);
+      return res.status(500).json({ message: 'Lỗi khi tạo đánh giá.', error: createError.message });
+    }
 
     res.status(201).json({ message: 'Cảm ơn bạn đã đánh giá sản phẩm của chúng tôi.' });
   } catch (error) {
-    console.error('Lỗi khi tạo đánh giá:', error);
+    console.error('Lỗi khi xử lý yêu cầu tạo đánh giá:', error.message);
     res.status(500).json({ message: 'Lỗi khi tạo đánh giá.', error: error.message });
   }
 };
 
+const getStatusBoughtProduct = async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    // Xác thực token
+    console.log(token);
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    const uid = decodedToken.uid;
+    const { id } = req.query;
+    if (!id) {
+      return res.status(400).json({ message: 'ID sản phẩm không được cung cấp.' });
+    }
+    const order = await OrderCustomer.findOne({
+      where: {
+        CustomerID: uid,
+        OrderStatus: 'Hoàn thành'
+      },
+      include: [{
+        model: OrderProductDetail,
+        where: {
+          ProductID: id
+        }
+      }]
+    });
+    console.log(order);
+    const bought = order ? true : false;
+    res.status(200).json({ bought });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
 
 const getProductsByManufacturer = async (req, res) => {
   try {
@@ -383,5 +422,6 @@ module.exports = {
   getDiscontinuedProducts,
   updateProduct,
   reView,
-  getProductsByManufacturer
+  getProductsByManufacturer,
+  getStatusBoughtProduct
 };
