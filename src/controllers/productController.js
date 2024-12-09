@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const { Product, Category, WarrantyPolicy, CountryOfOrigin, Manufacturer, ProductAttributeDetail,OrderCustomer,ProductAttribute, Image, Color, Customer, Review,OrderProductDetail, sequelize } = require('../models');
+const { Product, Category, WarrantyPolicy, CountryOfOrigin, Manufacturer, ProductAttributeDetail, OrderCustomer, ProductAttribute, Image, Color, Customer, Review, OrderProductDetail, sequelize } = require('../models');
 const admin = require('../config/firebaseAdmin.js');
 const getProductsByIdCategory = async (req, res) => {
   try {
@@ -45,20 +45,20 @@ const getProductsById = async (req, res) => {
 };
 
 const getProducts = async (req, res) => {
-    try {
-      const products = await Product.findAll(
-        {where:{IsDeleted:false}}
-      );
-      res.json(products);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
+  try {
+    const products = await Product.findAll(
+      { where: { IsDeleted: false } }
+    );
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
 const getDiscontinuedProducts = async (req, res) => {
   try {
     const products = await Product.findAll(
-      {where:{IsDeleted:true}}
+      { where: { IsDeleted: true } }
     );
     res.json(products);
   } catch (error) {
@@ -66,10 +66,10 @@ const getDiscontinuedProducts = async (req, res) => {
   }
 };
 const createProduct = async (req, res) => {
-  const transaction = await sequelize.transaction(); // Khởi tạo transaction
+  const transaction = await sequelize.transaction(); // Initialize transaction
   try {
-    // Lấy dữ liệu từ request body
-    const {newProduct, nameEmployee} = req.body;
+    // Extract data from request body
+    const { newProduct, nameEmployee } = req.body;
     const {
       ProductName,
       ListedPrice,
@@ -80,113 +80,139 @@ const createProduct = async (req, res) => {
       WarrantyPolicyID,
       ManufacturerID,
       CountryID,
-      colors,
-      specifications,
+      Colors,
+      ProductAttributeDetails,
       Images,
     } = newProduct;
     const Stock = 0;
-    const Status = true ;
-    console.log(newProduct , nameEmployee);
-    // Tạo sản phẩm mới
-    const product = await Product.create({ProductName: ProductName, ListedPrice: ListedPrice, RepresentativeImage: RepresentativeImage, Stock: Stock, Description: Description, PromotionalPrice: PromotionalPrice, Status: Status, CategoryID: CategoryID, WarrantyPolicyID: WarrantyPolicyID, ManufacturerID: ManufacturerID, CountryID: CountryID, CreatedBy: nameEmployee}, { transaction, returning: false });
-  
+    const Status = true;
+
+    console.log('New Product:', newProduct, 'Created By:', nameEmployee);
+
+    // Create new product
+    const product = await Product.create({
+      ProductName,
+      ListedPrice,
+      RepresentativeImage,
+      Stock,
+      Description,
+      PromotionalPrice,
+      Status,
+      CategoryID,
+      WarrantyPolicyID,
+      ManufacturerID,
+      CountryID,
+      CreatedBy: nameEmployee
+    }, {
+      transaction,
+      returning: true 
+    });
+
+    console.log('Created Product:', product);
+
+    // Use the correct primary key field
     const productID = product.id;
-  
-      // Lưu ảnh vào bảng Image
+
+    // Save images
     if (Images && Images.length > 0) {
-      for (const img of Images) {
-        await Image.create(
-          {
-            ProductID: productID,
-            ThuTu: img.ThuTu,
-            FilePath: img.FilePath,
-          },
-          { transaction, returning: false})
-      }};
-  
-      // Lưu màu sắc vào bảng Color
-   if (colors && colors.length > 0) {
-      const colorData = colors.map((colorName) => ({
-      ProductID: productID,
-        ColorName: colorName,
-      }));
-      await Color.bulkCreate(colorData, { transaction, returning: false });
+      const imagePromises = Images.map(img => Image.create({
+        ProductID: productID,
+        ThuTu: img.ThuTu,
+        FilePath: img.FilePath,
+      }, { transaction }));
+      await Promise.all(imagePromises);
     }
 
-      // Lưu thông số kỹ thuật
-    if (specifications && specifications.length > 0) {
-      for (const spec of specifications) {
-        // Tìm hoặc tạo mới ProductAttribute
-        const [attribute] = await ProductAttribute.findOrCreate({
-          where: { AttributeName: spec.name },
-          defaults: { AttributeName: spec.name },
-          transaction, returning: false,
+    // Save colors
+    if (Colors && Colors.length > 0) {
+      console.log('Inserting Colors:', Colors);
+      const colorPromises = Colors.map(color => Color.create({
+        ProductID: productID,
+        ColorName: color.ColorName,
+      }, { transaction }));
+      await Promise.all(colorPromises);
+      console.log('Colors inserted successfully.');
+    }
+
+    // Save specifications
+    if (ProductAttributeDetails && ProductAttributeDetails.length > 0) {
+      console.log('Inserting Specifications:', ProductAttributeDetails);
+      for (const spec of ProductAttributeDetails) {
+        const [attribute, created] = await ProductAttribute.findOrCreate({
+          where: { AttributeName: spec.AttributeName },
+          defaults: { AttributeName: spec.AttributeValue },
+          transaction,
         });
-  
-          // Tạo mới ProductAttributeDetail
+
+        console.log(
+          `Attribute '${spec.name}' ${created ? 'created' : 'found'} with ID: ${attribute.id}`
+        );
+
         await ProductAttributeDetail.create(
           {
             ProductID: productID,
             AttributeID: attribute.id,
-            AttributeValue: spec.value,
+            AttributeValue: spec.AttributeValue,
           },
-          { transaction, returning: false }
+          { transaction }
         );
+        console.log(`Specification '${spec.AttributeName}' inserted successfully.`);
       }
     }
-  
-      // Commit transaction nếu tất cả đều thành công
+
+    // Commit transaction if all operations succeed
     await transaction.commit();
     res.status(201).json({ message: 'Thêm sản phẩm thành công', product });
   } catch (error) {
-      // Rollback transaction nếu có lỗi
+    // Rollback transaction on error
     await transaction.rollback();
     console.error('Lỗi khi thêm sản phẩm:', error);
-    res.status(500).json({ message: 'Lỗi khi thêm sản phẩm', error });
+    res.status(500).json({ message: 'Lỗi khi thêm sản phẩm', error: error.message });
   }
 };
-  
+
+
 const deleteProduct = async (req, res) => {
-  try{
-  const { key } = req.query;
-  console.log(key);
-  const product = await Product.findByPk(key);
-  if (!product) {
-    return res.status(404).json({ message: 'Sản phẩm không tồn tại' });
+  try {
+    const { key } = req.query;
+    console.log(key);
+    const product = await Product.findByPk(key);
+    if (!product) {
+      return res.status(404).json({ message: 'Sản phẩm không tồn tại' });
     }
     product.IsDeleted = 1;
     await product.save();
     res.status(200).json({ message: 'Xóa sản phẩm thành công' });
-  }catch(error){
+  } catch (error) {
     console.error('Lỗi khi xóa sản phẩm:', error);
     res.status(500).json({ message: 'Lỗi khi xóa sản phẩm' });
   }
-  }
+}
 const SearchProduct = async (req, res) => {
-    try {
-        const { name, category } = req.query;
-        const searchConditions = {};
-        if (name) {
-            searchConditions.ProductName = { [Op.like]: `%${name}%` }; 
-        }
-        if (category) {
-            searchConditions.ProductTypeID = category; 
-        }
-        const products = await Product.findAll({
-            where: searchConditions
-        });
-        res.status(200).json(products);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Lỗi khi tìm kiếm sản phẩm' });
+  try {
+    const { name, category } = req.query;
+    const searchConditions = {};
+    if (name) {
+      searchConditions.ProductName = { [Op.like]: `%${name}%` };
     }
+    if (category) {
+      searchConditions.ProductTypeID = category;
+    }
+    const products = await Product.findAll({
+      where: searchConditions
+    });
+    res.status(200).json(products);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Lỗi khi tìm kiếm sản phẩm' });
+  }
 };
 
 const updateProduct = async (req, res) => {
   const transaction = await sequelize.transaction();
 
   try {
-    const { id } = req.query; 
+    const { id } = req.query;
     const { updatedProduct, nameEmployee } = req.body;
     const {
       ProductName,
@@ -228,12 +254,12 @@ const updateProduct = async (req, res) => {
         RepresentativeImage,
         UpdatedBy: nameEmployee,
       },
-      { 
+      {
         transaction,
-        returning: false // Giữ tùy chọn này nếu cần, nhưng đảm bảo rằng trigger không gây xung đột
+        returning: false
       }
     );
-
+    console.log(product);
     // Cập nhật màu sắc nếu có
     if (Colors && Array.isArray(Colors)) {
       await Color.destroy({ where: { ProductID: id }, transaction });
@@ -259,7 +285,7 @@ const updateProduct = async (req, res) => {
     // Cập nhật chi tiết thuộc tính sản phẩm nếu có
     if (ProductAttributeDetails && Array.isArray(ProductAttributeDetails)) {
       await ProductAttributeDetail.destroy({ where: { ProductID: id }, transaction });
-      
+
       // Chuẩn bị dữ liệu để bulk create
       const attributeDetailsData = await Promise.all(ProductAttributeDetails.map(async (spec) => {
         const [attribute] = await ProductAttribute.findOrCreate({
@@ -330,7 +356,7 @@ const reView = async (req, res) => {
     }
 
     const { RatingLevel, ReviewContent, ReviewDate, Bought } = req.body;
-    console.log(uid,id,RatingLevel, ReviewContent, ReviewDate, Bought);
+    console.log(uid, id, RatingLevel, ReviewContent, ReviewDate, Bought);
     if (RatingLevel === undefined || RatingLevel === null) {
       return res.status(400).json({ message: 'RatingLevel là bắt buộc.' });
     }
