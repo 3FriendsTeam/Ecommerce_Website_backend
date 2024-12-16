@@ -6,27 +6,28 @@ const admin = require('../config/firebaseAdmin.js');
 
 //Dang ky nguoi dung
 const registerCustomerWithEmailAndPassword = async (req, res) => {
-    const {
-        uid,
-        customerName,
-        gender,
-        email,
-        phoneNumber = null,
-        birthDate,
-        IsActive = true
-    } = req.body;
-    try {
-        await Customer.create({ id: uid, CustomerName: customerName, Email: email, PhoneNumber: phoneNumber, BirthDate: birthDate, Gender: gender , IsActive: IsActive});
-        res.status(200).json({ message: "Đăng ký thành công", uid, email });
-    } catch (error) {
-        console.error("Error registering user:", error);
-        res.status(500).json({error: true, message: error.message});
-    }
+  const {
+    uid,
+    customerName,
+    gender,
+    email,
+    phoneNumber = null,
+    birthDate,
+    IsActive = true
+  } = req.body;
+  try {
+    await Customer.create({ id: uid, CustomerName: customerName, Email: email, PhoneNumber: phoneNumber, BirthDate: birthDate, Gender: gender, IsActive: IsActive });
+    res.status(200).json({ message: "Đăng ký thành công", uid, email });
+  } catch (error) {
+    console.error("Error registering user:", error);
+    res.status(500).json({ error: true, message: error.message });
+  }
 }
 //check mail đã đăng kí hay chưa dưới DB
 const checkEmail = async (req, res) => {
   const { email } = req.query;
 
+  // 1. Nếu không có email => Bad Request
   if (!email) {
     return res.status(400).json({
       success: false,
@@ -38,14 +39,24 @@ const checkEmail = async (req, res) => {
     const user = await Customer.findOne({ where: { Email: email } });
 
     if (user) {
-      return res.status(200).json({
-        success: true,
-        message: 'Email already exists',
-      });
+      console.log(user);
+      if (user.IsActive === false) {
+        return res.status(200).json({
+          success: false,
+          message: 'Tài khoản đang bị khóa vui lòng liên hệ với hotline: 0987654321 để biết thêm chi tiết.!',
+        });
+      } else {
+        return res.status(200).json({
+          isLocked: true,
+          success: true,   
+          message: 'Email already exists',
+        });
+      }
     } else {
       return res.status(200).json({
-        success: false,
-        message: 'Email is available',
+        isLocked: false,
+        success: false, 
+        message: 'Email không tồn tại!',
       });
     }
   } catch (error) {
@@ -54,72 +65,73 @@ const checkEmail = async (req, res) => {
       message: error.message,
     });
   }
-};  
+};
+
 
 const getCustomerInfo = async (req, res) => {
-    const token = req.headers.authorization?.split(" ")[1];
-    try {
-        const decodedToken = await admin.auth().verifyIdToken(token);
-        const uid = decodedToken.uid;
-        const user = await Customer.findOne({ where: { id: uid } });
-        res.status(200).json(user);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({error: error.message});
-    }
+  const token = req.headers.authorization?.split(" ")[1];
+  try {
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    const uid = decodedToken.uid;
+    const user = await Customer.findOne({ where: { id: uid } });
+    res.status(200).json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
 }
 const updateCustomerInfo = async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
   const {
-      CustomerName,
-      Email,
-      PhoneNumber,
-      BirthDate,
-      Gender
+    CustomerName,
+    Email,
+    PhoneNumber,
+    BirthDate,
+    Gender
   } = req.body;
 
   try {
-      const decodedToken = await admin.auth().verifyIdToken(token);
-      const uid = decodedToken.uid;
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    const uid = decodedToken.uid;
 
-      const user = await Customer.findOne({ where: { id: uid } });
-      if (!user) {
-          return res.status(404).json({ error: true, message: "User not found" });
-      }
+    const user = await Customer.findOne({ where: { id: uid } });
+    if (!user) {
+      return res.status(404).json({ error: true, message: "User not found" });
+    }
 
-      await user.update({
-          CustomerName : CustomerName,
-          Email: Email,
-          PhoneNumber : PhoneNumber,
-          BirthDate : BirthDate,
-          Gender : Gender
-      });
+    await user.update({
+      CustomerName: CustomerName,
+      Email: Email,
+      PhoneNumber: PhoneNumber,
+      BirthDate: BirthDate,
+      Gender: Gender
+    });
 
-      res.status(200).json({ message: "Thông tin người dùng đã được cập nhật thành công" });
+    res.status(200).json({ message: "Thông tin người dùng đã được cập nhật thành công" });
   } catch (error) {
-      console.error("Error updating user info:", error);
-      res.status(500).json({ error: true, message: error.message });
+    console.error("Error updating user info:", error);
+    res.status(500).json({ error: true, message: error.message });
   }
 }
 const getAllCustomer = async (req, res) => {
-    try {
-        const data = await Customer.findAll({
-            attributes: {
-                exclude: ['Password']
-            }
-        });
-        res.send(data);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: error.message });
-    }
+  try {
+    const data = await Customer.findAll({
+      attributes: {
+        exclude: ['Password']
+      }
+    });
+    res.send(data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
 }
 const LockCustomer = async (req, res) => {
   const { key } = req.body;
   try {
     const user = await Customer.findOne({ where: { id: key } });
     await user.update({ IsActive: 0 });
-    res.status(200).json({message: "Khóa thành công"});
+    res.status(200).json({ message: "Khóa thành công" });
   } catch (error) {
     res.status(500).json({ message: "Lỗi hệ thống. vui lòng thử lại sau!" });
   }
@@ -130,17 +142,17 @@ const UnLockCustomer = async (req, res) => {
   try {
     const user = await Customer.findOne({ where: { id: key } });
     await user.update({ IsActive: 1 });
-    res.status(200).json({message: "Mở khóa thành công"});
+    res.status(200).json({ message: "Mở khóa thành công" });
   } catch (error) {
     res.status(500).json({ message: "Lỗi hệ thống. vui lòng thử lại sau!" });
   }
 }
 module.exports = {
-    registerCustomerWithEmailAndPassword,
-    checkEmail,
-    getCustomerInfo,
-    updateCustomerInfo,
-    getAllCustomer,
-    LockCustomer,
-    UnLockCustomer
+  registerCustomerWithEmailAndPassword,
+  checkEmail,
+  getCustomerInfo,
+  updateCustomerInfo,
+  getAllCustomer,
+  LockCustomer,
+  UnLockCustomer
 };
