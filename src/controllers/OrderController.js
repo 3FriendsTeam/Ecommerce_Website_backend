@@ -129,7 +129,7 @@ const getCompleteOrders = async (req, res) => {
                 "CustomerID"
             ],
             where: {
-                OrderStatus: "Đã hoàn thành",
+                OrderStatus: "Hoàn thành",
             }
         });
 
