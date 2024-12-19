@@ -16,10 +16,6 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true
       },
-      JoinDate: {
-        type: Sequelize.DATE,
-        allowNull: true
-      },
       Email: {
         type: Sequelize.STRING,
         allowNull: false,

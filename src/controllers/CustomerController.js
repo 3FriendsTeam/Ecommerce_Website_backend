@@ -12,11 +12,13 @@ const registerCustomerWithEmailAndPassword = async (req, res) => {
     gender,
     email,
     phoneNumber = null,
+    password,
     birthDate,
     IsActive = true
   } = req.body;
   try {
-    await Customer.create({ id: uid, CustomerName: customerName, Email: email, PhoneNumber: phoneNumber, BirthDate: birthDate, Gender: gender, IsActive: IsActive });
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await Customer.create({ id: uid, CustomerName: customerName, Email: email, PhoneNumber: phoneNumber, BirthDate: birthDate,Password:hashedPassword, Gender: gender, IsActive: IsActive });
     res.status(200).json({ message: "Đăng ký thành công", uid, email });
   } catch (error) {
     console.error("Error registering user:", error);
